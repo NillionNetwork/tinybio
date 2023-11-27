@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>tinyauth: Secure Decentralized Biometric Authentication Demo</title>
+    <script>
+      var favIcon = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGFBMVEUAAABHcEwAAAAAAAAAAAAAAAAAAAAAAACpMnD0AAAAB3RSTlNjAL+fpPk8rO4B2AAAADNJREFUGJVjYEQDDIxsLMxwwMIGFGBgRwIMOAVYgQBZgAlkHNMgEwB6joUB7E8WiOfQAADiPANLertncwAAAABJRU5ErkJggg==";
+      var docHead = document.getElementsByTagName('head')[0];
+      var newLink = document.createElement('link');
+      newLink.rel = 'shortcut icon';
+      newLink.type = 'image/x-icon';
+      newLink.href = 'data:image/png;base64,'+favIcon;
+      docHead.appendChild(newLink);
+    </script>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@300;400;500;700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.2/css/all.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+      html { height:100vh; }
+      body { display:flex; flex-direction:column; min-height:100vh; padding:0px 0px 0px 0px; font-family:'Cabin',sans-serif; }
+      @media (min-width: 768px) { html { font-size:16px; } }
+      a { color:#0000FF; text-decoration:none; }
+      a:hover { text-decoration:none; font-weight:bold; color:#000000; }
+      #header { min-height:100px; margin-top:60px; margin-bottom:20px; }
+      .space { margin-top:30px; }
+      hr { height:1px !important; margin:0px; border-top:1px solid #000000 !important; opacity:1; }
+      h1 { text-align:left; }
+      h2 { margin-top:10px; font-size:18px; font-weight:normal; }
+      h3 {
+        width:100%;
+        margin-bottom:0px;
+        padding:4px 10px 6px 10px;
+        border-top:1px solid #000000; border-left:1px solid #000000; border-right:1px solid #000000;
+        text-align:left;
+        font-size:16px;
+      }
+      .container > .row { margin-bottom:8px; }
+      .content { width:100%; margin:0px 10px 0px 0px; padding:4px 10px 4px 10px; text-align:left; }
+      .entity { margin-top:0px; padding:24px; border:1px solid #000000; }
+      .node > h3 { background-color:#0000FF; color:#FFFFFF; }
+      .node > .entity { border-top:1px solid #FFFFFF; background-color:#0000FF; color:#FFFFFF; }
+      .activated > h3 { background-color:#000000; color:#FFFFFF; }
+      .activated > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
+      .clickable { cursor:pointer; }
+      .clickable:hover > h3 { background-color:#000000; color:#FFFFFF; }
+      .clickable:hover > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
+      img { width:100%; border:1px solid #FFFFFF; }
+      .raw { width:100%; overflow:hidden; font-family:Monospace; font-size:10px; }
+      .client .raw { aspect-ratio:1; }
+      #result-bar {
+        width:0%; height:100px;
+        padding:20px;
+        background-color:#FFFFFF;
+        text-align:right; font-size:40px;
+        color:#FFFFFF;
+      }
+      .connectors { height:100px; margin:0px !important; padding:0px; width:100%; height:100%;}
+      canvas { width:100%; height:100px; }
+      .card-deck .card { border:0px; min-width:220px; }
+      .card { min-width:350px !important; }
+      .card-body { padding:2px 10px 2px 10px; line-height:18px; font-size:14px; }
+      footer { width:100%; margin:auto auto 0 auto; padding:16px 0px 16px 0px; background-color:#000000; color:#FFFFFF; }
+      footer a { color:#FFFFFF; }
+      footer a:hover { color:#FFFFFF; }
+      footer .card-deck { margin-bottom:0px !important; }
+      footer .card { margin-bottom:0px !important; border:0px; background-color:#000000; }
+      footer .card-body-items { padding:8px 20px 0px 20px; }
+      footer .card-body-items-left { float:left; }
+      footer .card-body-items-right { float:right; }
+      footer .card-deck-copyright { height:26x !important; font-size:10px; }
+      footer .card-copyright { height:26px !important; padding:0px 16px 0px 16px; font-size:12px !important; }
+      footer .license-phrase { color:#FFFFFF; }
+      footer .item { margin:0px 25px 0px 0px; white-space: nowrap; font-size:14px; }
+      footer .icon { margin:0px 15px 0px 0px; font-size:20px; }
+      footer .icon-last { margin:0px 0px 0px 0px; font-size:18px; }
+      .noselect {
+        -webkit-touch-callout:none; /* iOS Safari */
+          -webkit-user-select:none; /* Safari */
+           -khtml-user-select:none; /* Konqueror HTML */
+             -moz-user-select:none; /* Old versions of Firefox */
+              -ms-user-select:none; /* Internet Explorer/Edge */
+                  user-select:none; /* Non-prefixed version, currently
+                                       supported by Chrome, Edge, Opera and Firefox */
+      }
+      @media all and (max-width:900px) {
+        hr { }
+      }
+      @media all and (max-width:618px) {
+        #header { margin-top:50px; }
+        #license-phrase { display:none; }
+      }
+      @media all and (max-width:400px) {
+        .card { min-width:250px !important; }
+      }
+      @media all and (max-width:320px) { }
+    </style>
+  </head>
+  <body onload="connectors();">
+    <div class="container" id="header">
+      <div class="card-deck mb-3">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h1><b>tinyauth</b>: Secure Decentralized Biometric Authentication Demo</h1>
+            <hr/>
+            <h2>
+              This demo simulates a secure multi-party computation network <b>in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> library using <a href="https://pyscript.net">PyScript</a>. 
+              The <a href="https://github.com/ageitgey/face_recognition">Face Recognition</a> library was used to generate the inputs for each of the images below (the inputs in this demo are fixed because PyScript can only load libraries that are pure Python).
+              Click on one of the two <b>Login</b> options to view the computation and output.
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row row-cols-3 row-cols-sm-3 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="content activated">
+            <h3>Register</h3>
+            <div class="entity client">
+              <div class="row row-cols-2">
+                <div class="col-xs-6"><img src="auth-obama-register.png"/></div>
+                <div class="col-xs-6"><div class="raw" id="auth_obama_register"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div id="login-user-a" class="content clickable">
+            <h3>Login: User A</h3>
+            <div class="entity client">
+              <div class="row row-cols-2">
+                <div class="col-xs-6"><img src="auth-obama-login.png" /></div>
+                <div class="col-xs-6"><div class="raw" id="auth_obama_login"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div id="login-user-b" class="content clickable">
+            <h3>Login: User B</h3>
+            <div class="entity client">
+              <div class="row row-cols-2">
+                <div class="col-xs-6"><img src="auth-biden-login.png" /></div>
+                <div class="col-xs-6"><div class="raw" id="auth_biden_login"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-2 connectors">
+        <div class="col">
+          <canvas id="canvas-register-and-login"></canvas>
+        </div>
+      </div>
+      <!--div class="row row-cols-1 row-cols-sm-1 row-cols-md-3 g-3"></div-->
+      <div class="row row-cols-3 row-cols-sm-3 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="content node">
+            <h3>Node 1</h3>
+            <div class="entity">
+              <div class="row row-cols-1">
+                <div class="col-xs-6"><div class="raw" id="node-one"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="content node">
+            <h3>Node 2</h3>
+            <div class="entity">
+              <div class="row row-cols-1">
+                <div class="col-xs-6"><div class="raw" id="node-two"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="content node">
+            <h3>Node 3</h3>
+            <div class="entity">
+              <div class="row row-cols-1">
+                <div class="col-xs-6"><div class="raw" id="node-three"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-2 connectors">
+        <div class="col">
+          <canvas id="canvas-reconstruct"></canvas>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col">
+          <div class="content">
+            <h3>Network Output</h3>
+            <div class="entity">
+              <div class="row row-cols-1">
+                <div class="col-xs-6">
+                  <div id="result-bar"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space"></div>
+    <footer>
+      <div class="container noselect">
+        <div class="card-deck mb-3">
+          <div class="card mb-4">
+            <div class="card-body card-body-items">
+              <div class="card-body-items-left">
+                <span class="item"><span class="license-phrase">Made available under the </span><a href="https://opensource.org/license/mit/">MIT License</a></span>
+              </div>
+              <div class="card-body-items-right">
+                <span class="icon"><a href="mailto:engineering@nillion.com"><i class="far fa-envelope"></i></a></span>
+                <span class="icon-last"><a href="https://github.com/nillion-oss"><i class="fab fa-github"></i></a></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-deck mb-3 card-deck-copyright">
+          <div class="card mb-4 card-copyright"></div>
+        </div>
+      </div>
+    </footer>
+    <py-config>
+      packages = ["numpy", "tinynmc"]
+    </py-config>
+    <section class="pyscript">
+      <py-script>
+        from js import document
+        from pyodide.ffi import create_proxy
+        import numpy as np
+        from tinynmc import *
+
+        auth_obama_register = np.array([
+            -8.58781561e-02,  1.08835056e-01,  3.65723372e-02, -5.89280427e-02,
+            1.32483542e-02, -5.42661548e-03, -6.54466748e-02, -1.10336736e-01,
+            1.94522262e-01, -9.79864001e-02,  2.35232443e-01,  7.87549466e-02,
+           -2.13130474e-01, -1.63164675e-01,  5.99864796e-02,  1.14194058e-01,
+           -1.74584270e-01, -9.19561833e-02, -9.30094123e-02, -1.17708638e-01,
+            3.25165950e-02, -9.97350365e-03,  1.06906883e-01,  5.05531281e-02,
+           -1.44327551e-01, -3.40307087e-01, -6.07181117e-02, -1.88485175e-01,
+           -1.03403181e-02, -1.08085990e-01, -9.19387713e-02,  3.10940295e-03,
+           -1.80108353e-01, -1.24415658e-01,  1.67519674e-02, -1.89711638e-02,
+            1.18233413e-02, -8.10272992e-03,  2.11996675e-01,  2.65374742e-02,
+           -1.30677849e-01,  9.32836235e-02,  1.86072290e-02,  2.07101047e-01,
+            2.77875960e-01,  7.87800476e-02, -3.83745134e-03, -7.75236636e-02,
+            1.26798511e-01, -2.28157401e-01,  6.55233413e-02,  1.55302823e-01,
+            9.20143872e-02,  1.86426789e-02,  8.37418884e-02, -1.91329479e-01,
+           -6.09588623e-03,  7.60508031e-02, -1.49673611e-01,  3.03641669e-02,
+            1.80820003e-02, -9.49647725e-02, -3.86510342e-02,  5.92935234e-02,
+            1.82955056e-01,  1.07050925e-01, -1.13879219e-01, -5.32005876e-02,
+            1.31714165e-01, -3.95185761e-02,  1.59608759e-02,  2.32246742e-02,
+           -1.93916634e-01, -2.00455040e-01, -2.32742995e-01,  7.93687701e-02,
+            3.74781489e-01,  1.73277974e-01, -2.11373985e-01, -9.25846398e-05,
+           -2.12186217e-01,  4.90188822e-02,  6.51776046e-02,  1.55920088e-02,
+           -6.40055016e-02, -1.36019349e-01, -4.60828766e-02,  3.54795456e-02,
+            8.94847512e-02,  3.56751084e-02, -5.01492955e-02,  2.25857824e-01,
+           -1.44199170e-02,  6.71800673e-02,  1.12738144e-02,  4.95598093e-02,
+           -1.45274937e-01, -1.47500411e-02, -1.58632964e-01, -5.30680120e-02,
+            2.03705505e-02, -3.04526910e-02,  4.60555553e-02,  1.45609796e-01,
+           -2.50953496e-01,  5.73372766e-02,  5.78311086e-03, -4.20315005e-02,
+            3.14476937e-02,  7.46811330e-02, -3.75748798e-02, -4.73008156e-02,
+            5.88101260e-02, -2.38515288e-01,  2.37175658e-01,  2.59294331e-01,
+            2.66371816e-02,  1.70270354e-01,  6.62055165e-02,  2.14091986e-02,
+           -1.37910247e-04, -2.45290399e-02, -1.63018793e-01, -6.55204803e-02,
+            5.50495461e-02,  6.47143424e-02,  7.07047284e-02,  7.07007200e-03
+        ])
+
+        auth_biden_login = np.array([
+           -5.94348088e-02,  1.17753953e-01,  3.73517722e-02, -8.68298784e-02,
+           -5.48614562e-03,  1.77892148e-02, -1.17904082e-01, -8.37120712e-02,
+            2.22810879e-01, -1.79745853e-01,  2.52882004e-01,  8.28868076e-02,
+           -1.58478394e-01, -1.14865996e-01,  7.69765228e-02,  1.26359850e-01,
+           -2.09321916e-01, -7.85975531e-02, -1.03819862e-01, -8.72244462e-02,
+            4.17506322e-02, -1.42016914e-03,  5.04367352e-02,  3.16852257e-02,
+           -1.49321020e-01, -3.72642487e-01, -8.23974758e-02, -1.36736065e-01,
+            1.86241791e-02, -1.51702583e-01, -7.84574971e-02, -3.00910547e-02,
+           -1.90597728e-01, -7.27553815e-02, -3.67444083e-02, -1.07236952e-02,
+            3.35320830e-04, -4.28084731e-02,  1.19522758e-01,  3.02285217e-02,
+           -9.92611125e-02,  8.70907605e-02, -2.70904824e-02,  1.64061502e-01,
+            2.86860734e-01,  7.90737644e-02,  2.12505516e-02, -7.50056207e-02,
+            1.23344302e-01, -2.09780797e-01,  2.57165991e-02,  1.13710269e-01,
+            5.37981354e-02,  2.68551260e-02,  1.03005037e-01, -1.64047256e-01,
+           -1.31583214e-03,  8.42477083e-02, -1.83390617e-01,  2.98763663e-02,
+            1.40972584e-02, -5.56385703e-02, -6.87190145e-02,  5.11844568e-02,
+            2.13456005e-01,  1.22742809e-01, -1.11955777e-01, -9.56441090e-02,
+            1.27965540e-01, -6.04673773e-02,  1.41687244e-02, -2.35393085e-02,
+           -1.52986780e-01, -2.16916844e-01, -2.06395447e-01,  6.82106763e-02,
+            3.23446244e-01,  1.77454054e-01, -1.97833508e-01,  8.60146135e-02,
+           -1.61823019e-01,  2.36844085e-02,  4.61578593e-02, -8.01834464e-03,
+           -7.09615424e-02, -7.60056898e-02, -4.69315127e-02,  6.06514364e-02,
+            9.88939628e-02,  5.64719141e-02, -1.02547780e-02,  2.46464476e-01,
+           -6.91033155e-02,  1.26197934e-02,  4.18577343e-02,  2.08159015e-02,
+           -1.62669212e-01, -1.60740539e-02, -1.21763140e-01, -8.47118422e-02,
+            6.62832335e-02, -6.04587793e-02,  7.21928477e-03,  1.00514978e-01,
+           -2.17153445e-01,  1.32877439e-01, -3.80835682e-02,  1.30560249e-04,
+            4.48988900e-02,  5.67616373e-02, -9.51901227e-02, -2.85248458e-02,
+            1.03198037e-01, -2.51681030e-01,  2.17632383e-01,  2.16781825e-01,
+            2.77376771e-02,  1.93441570e-01,  8.80715325e-02,  6.29435256e-02,
+           -1.79621428e-02,  1.27160549e-02, -1.75321072e-01, -6.55242875e-02,
+            3.21264639e-02,  3.11214477e-02,  9.15246010e-02,  9.49359685e-03
+        ])
+
+        auth_obama_login = np.array([
+            0.00212619,  0.18151706,  0.08942953, -0.02890671, -0.13226929,
+            0.04053924, -0.03351213, -0.07746185,  0.05412485, -0.05690688,
+            0.24183112, -0.05402808, -0.25743547, -0.05157366,  0.06138312,
+            0.12605762, -0.14946286, -0.065528  , -0.20102571, -0.06235633,
+           -0.01103378, -0.04100163,  0.0259372 , -0.07272566, -0.20662074,
+           -0.23533899, -0.04712098, -0.10228274, -0.02789488, -0.16243917,
+            0.07824216, -0.03084394, -0.14441708, -0.05164237, -0.0471013 ,
+           -0.02985838, -0.01722829, -0.05847334,  0.13154447,  0.02626334,
+           -0.17892292,  0.13025913,  0.00733507,  0.21587208,  0.29474825,
+           -0.00523585,  0.04717012, -0.08853561,  0.13626248, -0.24181873,
+            0.05437323,  0.03498965,  0.16807064,  0.05769803,  0.14244419,
+           -0.07317222,  0.02392226,  0.18972905, -0.200625  ,  0.03737666,
+            0.05043872, -0.05482151,  0.03411504, -0.0434923 ,  0.12301475,
+            0.11024222, -0.00977708, -0.09036197,  0.19369109, -0.09519796,
+           -0.11277228,  0.03078762, -0.06616241, -0.12772177, -0.33526263,
+            0.00107872,  0.27036455,  0.13602163, -0.29611114, -0.0756229 ,
+           -0.04549202,  0.00518056,  0.03369433,  0.00834189, -0.03430054,
+           -0.13692579, -0.05488767, -0.0143756 ,  0.24373628, -0.10935876,
+            0.00704377,  0.22373429,  0.04802173, -0.1484417 ,  0.05571184,
+           -0.03593145, -0.11785193, -0.01510642, -0.11769228, -0.05191778,
+           -0.02262578, -0.15878257, -0.03007998,  0.06657006, -0.26241174,
+            0.1640259 , -0.01417356, -0.07986992, -0.05631723, -0.04092154,
+            0.01244713,  0.06576461,  0.2290711 , -0.2499879 ,  0.20107338,
+            0.22818179, -0.05759404,  0.07731687,  0.0120653 ,  0.06270907,
+           -0.0390425 ,  0.03572975, -0.08620852, -0.13285427, -0.00430026,
+           -0.02123457,  0.00961281,  0.06677744
+        ])
+
+        k = 16
+        nodes = [node(), node(), node()]
+        signature = [1, 1] + ([2] * 128)
+        preprocess(signature, nodes)
+
+        #coords_to_values_a = {(0, 0): 1, (1, 0): 4}
+        #masks_from_nodes_a = [node.masks(coords_to_values_a.keys()) for node in nodes]
+        #display(str(masks_from_nodes_a))
+        #element.innerHTML = str(masks_from_nodes_a).replace('\n', '<br/>')
+
+        def cutoff(s):
+            _limit = 30
+            return s[:(_limit - 3)] + '...' if len(s) > _limit else s
+
+        def contribution_show(data, element_id):
+            element = document.getElementById(element_id)
+            lines = []
+            for (k, v) in list(data.items())[:9]:
+                lines.append(cutoff(str(int(v))))
+            element.innerHTML = '<div>' + ('<br/>'.join(lines + ['...'])) + '</div>'
+
+        def computation_show(data, element_id):
+            element = document.getElementById(element_id)
+            element.innerHTML = str(data)
+
+        def contribution(data, element_id, is_login=False):
+            is_login = int(is_login)
+            encoding = np.int64(np.round(data * 2**k))
+            square = np.int64((np.sum(data * data)* 2**(2*k)))
+            coords_to_values = {(is_login, 0): int(square)}
+            for i, val in enumerate(encoding, 2):
+                coords_to_values[(i, is_login)] = int(((is_login*3-2) * val))
+
+            masks_from_nodes = [node.masks(coords_to_values.keys()) for node in nodes]
+            masked_factors = tinynmc.masked_factors(coords_to_values, masks_from_nodes)
+
+            contribution_show(masked_factors, element_id)
+
+            return masked_factors
+
+        def compute_and_reconstruct(nodes, k, signature, broadcast):
+            shares = []
+            for (name, node) in zip(['one', 'two', 'three'], nodes):
+                result_share_at_node = node.compute(signature, broadcast)
+                shares.append(result_share_at_node)
+                computation_show(result_share_at_node, 'node-' + name)
+
+            rational_secret = (int(sum(shares)))
+            floating_secret = rational_secret / 2**(2*k)
+            login_successful = 0.25 > floating_secret
+
+            percentage = str(int(100 * floating_secret)) + '%'
+            document.getElementById('result-bar').style.backgroundColor = '#000000'
+            document.getElementById('result-bar').style.width = percentage
+            document.getElementById('result-bar').innerHTML = percentage
+
+        def run_a(_):
+            document.getElementById('active').value = 'a'
+            js.connectors()
+            masked_auth_login = contribution(auth_obama_login, 'auth_obama_login', True)
+            compute_and_reconstruct(nodes, k, signature, [masked_auth_register, masked_auth_login])
+
+        def run_b(_):
+            document.getElementById('active').value = 'b'
+            js.connectors()
+            masked_auth_login = contribution(auth_biden_login, 'auth_biden_login', True)
+            compute_and_reconstruct(nodes, k, signature, [masked_auth_register, masked_auth_login])
+
+        masked_auth_register = contribution(auth_obama_register, 'auth_obama_register')
+        e = document.getElementById('login-user-a')
+        e.addEventListener('click', create_proxy(run_a))
+        e = document.getElementById('login-user-b')
+        e.addEventListener('click', create_proxy(run_b))
+      </py-script>
+      <input id="active" type="hidden" value="none"/>
+    </section>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+    </script>
+    <script>
+      const canvas_register_and_login = document.getElementById("canvas-register-and-login");
+      const context_register_and_login = canvas_register_and_login.getContext("2d");
+      const canvas_reconstruct = document.getElementById("canvas-reconstruct");
+      const context_reconstruct = canvas_reconstruct.getContext("2d");
+
+      function vertical(context, x1, y1, x2, y2, color) {
+          context.fillStyle = color;
+          context.fillRect(x1 - 1, y1, x2 - x1 + 2, y2 - y1);
+      }
+
+      function horizontal(context, x1, y1, x2, y2, color) {
+          context.fillStyle = color;
+          context.fillRect(x1 - 1, y1 - 2, x2 - x1 + 2, y2 - y1 + 4);
+      }
+
+      function connectors() {
+          // Registration and login connectors.
+          canvas_register_and_login.width = canvas_register_and_login.offsetWidth;
+          let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
+
+          vertical(context_register_and_login, w/6, 0, w/6, h/2, "#CCCCCC");
+          horizontal(context_register_and_login, w/6, h/2, (5*w)/6, h/2, "#CCCCCC");
+          vertical(context_register_and_login, w/2, h/2, w/2, h, "#CCCCCC");
+          vertical(context_register_and_login, w/6, h/2, w/6, h, "#CCCCCC");
+          vertical(context_register_and_login, (5*w)/6, h/2, (5*w)/6, h, "#CCCCCC");
+
+          const active = document.getElementById('active').value;
+          if (active !== 'none') {
+              const offset = 30;
+              const a_or_b = (active == 'a') ? w/2 : (5*w)/6;
+              vertical(context_register_and_login, a_or_b + offset, 0, a_or_b + offset, (3*h)/4, "#000000");
+              horizontal(context_register_and_login, w/6 + offset, (3*h)/4, (5*w)/6 + offset, (3*h)/4, "#000000");
+              vertical(context_register_and_login, w/2 + offset, (3*h)/4, w/2 + offset, h, "#000000");
+              vertical(context_register_and_login, w/6 + offset, (3*h)/4, w/6 + offset, h, "#000000");
+              vertical(context_register_and_login, (5*w)/6 + offset, (3*h)/4, (5*w)/6 + offset, h, "#000000");
+          }
+
+          // Reconstruction connectors.
+          canvas_reconstruct.width = canvas_reconstruct.offsetWidth;
+          w = canvas_reconstruct.width, h = canvas_reconstruct.height;
+
+          vertical(context_reconstruct, w/2, 0, w/2, h/2, "#0000FF");
+          vertical(context_reconstruct, w/6, 0, w/6, h/2, "#0000FF");
+          vertical(context_reconstruct, (5*w)/6, 0, (5*w)/6, h/2, "#0000FF");
+          horizontal(context_reconstruct, w/6, h/2, (5*w)/6, h/2, "#0000FF");
+          vertical(context_reconstruct, w/2, h/2, w/2, h, "#0000FF");
+      }
+      
+      window.onresize = connectors;
+    </script>
+  </body>
+</html>
