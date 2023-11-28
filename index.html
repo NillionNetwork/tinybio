@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>tinyauth: Secure Decentralized Biometric Authentication Demo</title>
+    <title>tinybio: Secure Decentralized Biometric Authentication Demo</title>
     <script>
       var favIcon = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGFBMVEUAAABHcEwAAAAAAAAAAAAAAAAAAAAAAACpMnD0AAAAB3RSTlNjAL+fpPk8rO4B2AAAADNJREFUGJVjYEQDDIxsLMxwwMIGFGBgRwIMOAVYgQBZgAlkHNMgEwB6joUB7E8WiOfQAADiPANLertncwAAAABJRU5ErkJggg==";
       var docHead = document.getElementsByTagName('head')[0];
@@ -87,7 +87,8 @@
                                        supported by Chrome, Edge, Opera and Firefox */
       }
       @media all and (max-width:900px) {
-        hr { }
+        .client .raw { display:none; }
+        .client > .row > .col-xs-6 { width:100%; }
       }
       @media all and (max-width:618px) {
         #header { margin-top:50px; }
@@ -104,10 +105,10 @@
       <div class="card-deck mb-3">
         <div class="card mb-4">
           <div class="card-body">
-            <h1><b>tinyauth</b>: Secure Decentralized Biometric Authentication Demo</h1>
+            <h1><b>tinybio</b>: Secure Decentralized Biometric Authentication Demo</h1>
             <hr/>
             <h2>
-              This demo simulates a secure multi-party computation network <b>in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> library using <a href="https://pyscript.net">PyScript</a>. 
+              This demo simulates a secure multi-party computation network <b>in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinybio">tinybio</a> and underlying <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> libraries using <a href="https://pyscript.net">PyScript</a>. 
               The <a href="https://github.com/ageitgey/face_recognition">Face Recognition</a> library was used to generate the inputs for each of the images below (the inputs in this demo are fixed because PyScript can only load libraries that are pure Python).
               Click on one of the two <b>Login</b> options to view the computation and output.
             </h2>
