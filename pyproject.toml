@@ -1,0 +1,47 @@
+[project]
+name = "tinybio"
+version = "0.0.0"
+description = """\
+    Minimal pure-Python library that implements a basic version of a \
+    secure decentralized biometric authentication functionality via \
+    a secure multi-party computation protocol.\
+    """
+license = {text = "MIT"}
+authors = [
+    {name = "Nillion"},
+    {email = "engineering@nillion.com"}
+]
+readme = "README.rst"
+requires-python = ">=3.7"
+dependencies = [
+    "tinynmc~=0.2"
+]
+
+[project.urls]
+Repository = "https://github.com/nillion-oss/tinybio"
+Documentation = "https://tinybio.readthedocs.io"
+
+[project.optional-dependencies]
+test = [
+    "pytest~=7.2",
+    "pytest-cov~=4.0"
+]
+lint = [
+    "pylint~=2.17.0"
+]
+coveralls = [
+    "coveralls~=3.3.1"
+]
+publish = [
+    "build~=0.10",
+    "twine~=4.0"
+]
+
+[build-system]
+requires = [
+    "setuptools>=68.0"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --cov=tinynmc"
