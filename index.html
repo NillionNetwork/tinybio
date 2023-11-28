@@ -232,16 +232,15 @@
       </div>
     </footer>
     <py-config>
-      packages = ["numpy", "tinynmc"]
+      packages = ["tinynmc"]
     </py-config>
     <section class="pyscript">
       <py-script>
         from js import document
         from pyodide.ffi import create_proxy
-        import numpy as np
         from tinynmc import *
 
-        auth_obama_register = np.array([
+        data_obama_register = [
             -8.58781561e-02,  1.08835056e-01,  3.65723372e-02, -5.89280427e-02,
             1.32483542e-02, -5.42661548e-03, -6.54466748e-02, -1.10336736e-01,
             1.94522262e-01, -9.79864001e-02,  2.35232443e-01,  7.87549466e-02,
@@ -274,9 +273,9 @@
             2.66371816e-02,  1.70270354e-01,  6.62055165e-02,  2.14091986e-02,
            -1.37910247e-04, -2.45290399e-02, -1.63018793e-01, -6.55204803e-02,
             5.50495461e-02,  6.47143424e-02,  7.07047284e-02,  7.07007200e-03
-        ])
+        ]
 
-        auth_biden_login = np.array([
+        data_biden_login = [
            -5.94348088e-02,  1.17753953e-01,  3.73517722e-02, -8.68298784e-02,
            -5.48614562e-03,  1.77892148e-02, -1.17904082e-01, -8.37120712e-02,
             2.22810879e-01, -1.79745853e-01,  2.52882004e-01,  8.28868076e-02,
@@ -309,9 +308,9 @@
             2.77376771e-02,  1.93441570e-01,  8.80715325e-02,  6.29435256e-02,
            -1.79621428e-02,  1.27160549e-02, -1.75321072e-01, -6.55242875e-02,
             3.21264639e-02,  3.11214477e-02,  9.15246010e-02,  9.49359685e-03
-        ])
+        ]
 
-        auth_obama_login = np.array([
+        data_obama_login = [
             0.00212619,  0.18151706,  0.08942953, -0.02890671, -0.13226929,
             0.04053924, -0.03351213, -0.07746185,  0.05412485, -0.05690688,
             0.24183112, -0.05402808, -0.25743547, -0.05157366,  0.06138312,
@@ -338,77 +337,115 @@
             0.22818179, -0.05759404,  0.07731687,  0.0120653 ,  0.06270907,
            -0.0390425 ,  0.03572975, -0.08620852, -0.13285427, -0.00430026,
            -0.02123457,  0.00961281,  0.06677744
-        ])
+        ]
 
-        k = 16
-        nodes = [node(), node(), node()]
-        signature = [1, 1] + ([2] * 128)
-        preprocess(signature, nodes)
+        from typing import Sequence, Iterable
+        from modulo import modulo
 
-        #coords_to_values_a = {(0, 0): 1, (1, 0): 4}
-        #masks_from_nodes_a = [node.masks(coords_to_values_a.keys()) for node in nodes]
-        #display(str(masks_from_nodes_a))
-        #element.innerHTML = str(masks_from_nodes_a).replace('\n', '<br/>')
+        _PRECISION = 16
 
-        def cutoff(s):
+        def _encode(data, is_login=0):
+            encoding = [round(value * (2 ** _PRECISION)) for value in data]
+
+            coords_to_values = {(is_login, 0): sum([value * value for value in encoding])}
+            for (index, value) in enumerate(encoding, 2):
+                coords_to_values[(index, is_login)] = ((is_login * 3) - 2) * value
+
+            return coords_to_values
+
+        class tinybio:
+            class node(tinynmc.node):
+                """
+                Data structure for maintaining the information associated with a node
+                and performing node operations.
+                """
+                def authenticate(self, data):
+                    """
+                    Perform computation associated with a login operation.
+                    """
+                    return self.compute(self._signature, data)
+
+            def preprocess(length: int, nodes: Sequence[node]):
+                """
+                Simulate a preprocessing phase among the collection of nodes for a workflow
+                that supports registration and authentication data vectors of the specified
+                length.
+                """
+                signature = [1, 1] + ([2] * length)
+                tinynmc.preprocess(signature, nodes)
+                for node in nodes:
+                    setattr(node, '_signature', signature)
+
+            def registration_request(data):
+                return _encode(data, 0).keys()
+
+            def authentication_request(data):
+                return _encode(data, 1).keys()
+
+            def registration_token(masks, data):
+                return tinynmc.masked_factors(_encode(data, 0), masks)
+
+            def authentication_token(masks, data):
+                return tinynmc.masked_factors(_encode(data, 1), masks)
+
+            def reveal(shares: Iterable[modulo]) -> int:
+                """
+                Reconstruct the result of the overall workflow from its shares and convert
+                it into a meaningful output (as a percentage).
+                """
+                return (100 * int(sum(shares))) // (2 ** (2 * _PRECISION))
+
+        def show_cutoff(s):
             _limit = 30
             return s[:(_limit - 3)] + '...' if len(s) > _limit else s
 
         def contribution_show(data, element_id):
-            element = document.getElementById(element_id)
             lines = []
             for (k, v) in list(data.items())[:9]:
-                lines.append(cutoff(str(int(v))))
+                lines.append(show_cutoff(str(int(v))))
+
+            element = document.getElementById(element_id)
             element.innerHTML = '<div>' + ('<br/>'.join(lines + ['...'])) + '</div>'
 
         def computation_show(data, element_id):
             element = document.getElementById(element_id)
             element.innerHTML = str(data)
 
-        def contribution(data, element_id, is_login=False):
-            is_login = int(is_login)
-            encoding = np.int64(np.round(data * 2**k))
-            square = np.int64((np.sum(data * data)* 2**(2*k)))
-            coords_to_values = {(is_login, 0): int(square)}
-            for i, val in enumerate(encoding, 2):
-                coords_to_values[(i, is_login)] = int(((is_login*3-2) * val))
-
-            masks_from_nodes = [node.masks(coords_to_values.keys()) for node in nodes]
-            masked_factors = tinynmc.masked_factors(coords_to_values, masks_from_nodes)
-
-            contribution_show(masked_factors, element_id)
-
-            return masked_factors
-
-        def compute_and_reconstruct(nodes, k, signature, broadcast):
+        def compute_and_reveal(nodes, broadcast):
             shares = []
             for (name, node) in zip(['one', 'two', 'three'], nodes):
-                result_share_at_node = node.compute(signature, broadcast)
-                shares.append(result_share_at_node)
-                computation_show(result_share_at_node, 'node-' + name)
+                result_share = node.authenticate(broadcast)
+                shares.append(result_share)
+                computation_show(result_share, 'node-' + name)
 
-            rational_secret = (int(sum(shares)))
-            floating_secret = rational_secret / 2**(2*k)
-            login_successful = 0.25 > floating_secret
-
-            percentage = str(int(100 * floating_secret)) + '%'
+            result = tinybio.reveal(shares)
+            percentage_str = str(result) + '%'
             document.getElementById('result-bar').style.backgroundColor = '#000000'
-            document.getElementById('result-bar').style.width = percentage
-            document.getElementById('result-bar').innerHTML = percentage
+            document.getElementById('result-bar').style.width = percentage_str
+            document.getElementById('result-bar').innerHTML = percentage_str
 
         def run_a(_):
             document.getElementById('active').value = 'a'
             js.connectors()
-            masked_auth_login = contribution(auth_obama_login, 'auth_obama_login', True)
-            compute_and_reconstruct(nodes, k, signature, [masked_auth_register, masked_auth_login])
+            masks = [node.masks(tinybio.authentication_request(data_obama_login)) for node in nodes]
+            token_authentication = tinybio.authentication_token(masks, data_obama_login)
+            contribution_show(token_authentication, 'auth_obama_login')
+            compute_and_reveal(nodes, [token_registration, token_authentication])
 
         def run_b(_):
             document.getElementById('active').value = 'b'
             js.connectors()
-            masked_auth_login = contribution(auth_biden_login, 'auth_biden_login', True)
-            compute_and_reconstruct(nodes, k, signature, [masked_auth_register, masked_auth_login])
+            masks = [node.masks(tinybio.authentication_request(data_biden_login)) for node in nodes]
+            token_authentication = tinybio.authentication_token(masks, data_biden_login)
+            contribution_show(token_authentication, 'auth_biden_login')
+            compute_and_reveal(nodes, [token_registration, token_authentication])
 
-        masked_auth_register = contribution(auth_obama_register, 'auth_obama_register')
+        nodes = [tinybio.node(), tinybio.node(), tinybio.node()]
+        tinybio.preprocess(128, nodes)
+        masks = [node.masks(tinybio.registration_request(data_obama_register)) for node in nodes]
+        token_registration = tinybio.registration_token(masks, data_obama_register)
+        contribution_show(token_registration, 'auth_obama_register')
+
         e = document.getElementById('login-user-a')
         e.addEventListener('click', create_proxy(run_a))
         e = document.getElementById('login-user-b')
