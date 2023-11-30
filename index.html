@@ -245,12 +245,10 @@
     </py-config>
     <section class="pyscript">
       <py-script>
-        from js import document, Array, registerInputValue, loginUserBValue, loginUserAValue
+        import js
+        from js import document
         from pyodide.ffi import create_proxy
         from tinynmc import *
-
-        data_obama_login = list(loginUserAValue)
-        data_biden_login = list(loginUserBValue)
 
         from typing import Sequence, Iterable
         from modulo import modulo
@@ -340,28 +338,38 @@
         def run_a(_):
             document.getElementById('active').value = 'a'
             js.connectors()
+            data_obama_login = list(js.getLoginUserA())
+            print(data_obama_login)
             masks = [node.masks(tinybio.authentication_request(data_obama_login)) for node in nodes]
+            print(masks)
             token_authentication = tinybio.authentication_token(masks, data_obama_login)
             print(token_authentication)
             contribution_show(token_authentication, 'auth_obama_login')
             compute_and_reveal(nodes, [token_registration, token_authentication])
+            
+            
+            
 
         def run_b(_):
             document.getElementById('active').value = 'b'
             js.connectors()
+            data_biden_login = list(js.getLoginUserB())
             masks = [node.masks(tinybio.authentication_request(data_biden_login)) for node in nodes]
             token_authentication = tinybio.authentication_token(masks, data_biden_login)
-            print(token_authentication)
             contribution_show(token_authentication, 'auth_biden_login')
             compute_and_reveal(nodes, [token_registration, token_authentication])
+            print(data_biden_login)
+            print(masks)
+            print(token_authentication)
 
         def submittedPhoto(_):
-            from js import registerInputValue
-            register = list(registerInputValue)
-            masks = [node.masks(tinybio.registration_request(register)) for node in nodes]
-            token_registration = tinybio.registration_token(masks, register)
-            print(token_registration)
+            registerInput = list(js.getRegisterInput())
+            masks = [node.masks(tinybio.registration_request(registerInput)) for node in nodes]
+            token_registration = tinybio.registration_token(masks, registerInput)
             contribution_show(token_registration, 'auth_obama_register')
+            print(registerInput)
+            print(masks)
+            print(token_registration)
         
         token_registration = []
         nodes = [tinybio.node(), tinybio.node(), tinybio.node()]
@@ -387,6 +395,18 @@
       var registerInputValue;
       var loginUserAValue;
       var loginUserBValue;
+
+      function getRegisterInput() {
+        return registerInputValue;
+      }
+
+      function getLoginUserA() {
+        return loginUserAValue;
+      }
+
+      function getLoginUserB() {
+        return loginUserBValue;
+      }
       const canvas_register_and_login = document.getElementById("canvas-register-and-login");
       const context_register_and_login = canvas_register_and_login.getContext("2d");
       const canvas_reconstruct = document.getElementById("canvas-reconstruct");
@@ -439,8 +459,7 @@
         const detection = await faceapi.detectSingleFace(imgElement, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
             .withFaceExpressions()
-            
-        console.log(detection)
+
         return detection
       }
 
@@ -476,7 +495,6 @@
                 
                 // set global variable to pass input value to pyscript
                 registerInputValue = normalized;
-                console.log(registerInputValue);
               })
               
           };
@@ -495,18 +513,13 @@
         processImage(userA).then((processedImg)=> {
           const normalized = normalizeDetectedImageCoords(processedImg);
           loginUserAValue = normalized;
-          console.log('a')
-          console.log(loginUserAValue);
         })
 
         // process user b
         var userB = document.getElementById('img-user-b');
         processImage(userB).then((processedImg)=> {
-          console.log(processedImg)
           const normalized = normalizeDetectedImageCoords(processedImg);
           loginUserBValue = normalized;
-          console.log('b')
-          console.log(loginUserBValue);
         })
       }
 
