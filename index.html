@@ -271,8 +271,6 @@
                 and performing node operations.
                 """
                 def authenticate(self, data):
-                    print("self")
-                    print(len(self._signature))
                     """
                     Perform computation associated with a login operation.
                     """
@@ -341,17 +339,11 @@
             document.getElementById('active').value = 'a'
             js.connectors()
             data_obama_login = list(js.getLoginUserA())
-            print(data_obama_login)
             masks = [node.masks(tinybio.authentication_request(data_obama_login)) for node in nodes]
-            print(masks)
             token_authentication = tinybio.authentication_token(masks, data_obama_login)
-            print(token_authentication)
             contribution_show(token_authentication, 'auth_obama_login')
             compute_and_reveal(nodes, [token_registration, token_authentication])
             
-            
-            
-
         def run_b(_):
             document.getElementById('active').value = 'b'
             js.connectors()
@@ -360,20 +352,15 @@
             token_authentication = tinybio.authentication_token(masks, data_biden_login)
             contribution_show(token_authentication, 'auth_biden_login')
             compute_and_reveal(nodes, [token_registration, token_authentication])
-            print(data_biden_login)
-            print(masks)
-            print(token_authentication)
 
         def submittedPhoto(_):
+            global token_registration
             registerInput = list(js.getRegisterInput())
             masks = [node.masks(tinybio.registration_request(registerInput)) for node in nodes]
             token_registration = tinybio.registration_token(masks, registerInput)
             contribution_show(token_registration, 'auth_obama_register')
-            print(registerInput)
-            print(masks)
-            print(token_registration)
         
-        token_registration = []
+        token_registration = {}
         nodes = [tinybio.node(), tinybio.node(), tinybio.node()]
         tinybio.preprocess(136, nodes)
         e = document.getElementById('submitted-photo')
