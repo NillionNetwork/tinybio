@@ -59,9 +59,7 @@
       .node > .entity { border-top:1px solid #FFFFFF; background-color:#0000FF; color:#FFFFFF; }
       .activated > h3 { background-color:#000000; color:#FFFFFF; }
       .activated > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
-      .clickable { cursor:pointer; }
-      .clickable:hover > h3 { background-color:#000000; color:#FFFFFF; }
-      .clickable:hover > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
+      .clickable > img { cursor:pointer; }
       img { width:100%; border:1px solid #FFFFFF; }
       .raw { display:inline-block; width:100%; overflow:hidden; word-break: break-word; word-wrap:break-word; font-family:Monospace; font-size:10px; }
       .client { padding-top:0px; }
@@ -119,6 +117,14 @@
         -moz-box-shadow: 0px 0px 0px 0px #555555;
         box-shadow: 0px 0px 0px 0px #555555;
       }
+      .file-choose:disabled {
+        background-color:#CCCCCC;
+        color:#777777;
+      }
+      .file-choose-disabled {
+        background-color:#CCCCCC;
+        color:#777777;
+      }
       button {
         width:100%;
         margin:0px 2px 2px 0px;
@@ -138,6 +144,10 @@
         -webkit-box-shadow: 0px 0px 0px 0px #555555;
         -moz-box-shadow: 0px 0px 0px 0px #555555;
         box-shadow: 0px 0px 0px 0px #555555;
+      }
+      button:disabled {
+        background-color:#CCCCCC;
+        color:#777777;
       }
       #result-bar {
         min-width:10%; height:100px;
@@ -235,7 +245,7 @@
                   <div class="data-box clickable" style="margin-bottom:6px;">
                     <img id="previewImage" src="reg-obama.png" />
                   </div>
-                  <label class="file-choose">
+                  <label id="imageUploaderLabel" class="file-choose">
                     <input type="file" id="imageUploader" accept="image/*" style="width:100% !important; display:none;" />
                     Choose File
                   </label>
@@ -495,7 +505,10 @@
             document.getElementById('result-bar').innerHTML = str(result)[:7]
 
         def run_a(_):
+            document.getElementById('authenticate').disabled = True
             document.getElementById('active').value = 'a'
+            document.getElementById('img-auth-a').style.cursor = 'auto';
+            document.getElementById('img-auth-b').style.cursor = 'auto';
             js.connectors()
             data_obama_login = list(js.getLoginUserA())
             masks = [node.masks(tinybio.authentication_request(data_obama_login)) for node in nodes]
@@ -504,7 +517,10 @@
             compute_and_reveal(nodes, [token_registration, token_authentication])
             
         def run_b(_):
+            document.getElementById('authenticate').disabled = True
             document.getElementById('active').value = 'b'
+            document.getElementById('img-auth-a').style.cursor = 'auto';
+            document.getElementById('img-auth-b').style.cursor = 'auto';
             js.connectors()
             data_biden_login = list(js.getLoginUserB())
             masks = [node.masks(tinybio.authentication_request(data_biden_login)) for node in nodes]
@@ -513,6 +529,14 @@
             compute_and_reveal(nodes, [token_registration, token_authentication])
 
         def submittedPhoto(_):
+            document.getElementById('register').disabled = True
+            document.getElementById('imageUploader').disabled = True
+            document.getElementById('imageUploaderLabel').style.backgroundColor = '#CCCCCC';
+            document.getElementById('imageUploaderLabel').style.color = '#777777';
+            document.getElementById('imageUploaderLabel').style.cursor = 'auto';
+            document.getElementById('previewImage').style.cursor = 'auto';
+            document.getElementById('previewImage').style.border = '4px solid #0000FF';
+            js.connectors_register()
             global token_registration
             registerInput = list(js.getRegisterInput())
             masks = [node.masks(tinybio.registration_request(registerInput)) for node in nodes]
@@ -578,9 +602,7 @@
           }*/
       }
 
-      function connectors() {
-          containImages();
-
+      function connectors_register() {
           // Registration and login connectors.
           canvas_register_and_login.width = canvas_register_and_login.offsetWidth;
           let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
@@ -590,6 +612,14 @@
           vertical(context_register_and_login, w/2, h/2, w/2, h, "#CCCCCC");
           vertical(context_register_and_login, w/6, h/2, w/6, h, "#CCCCCC");
           vertical(context_register_and_login, (5*w)/6, h/2, (5*w)/6, h, "#CCCCCC");
+      }
+
+      function connectors() {
+          containImages();
+
+          connectors_register();
+
+          let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
 
           const active = document.getElementById('active').value;
           if (active !== 'none') {
@@ -662,13 +692,17 @@
       });
 
       document.getElementById('img-auth-a').addEventListener('click', function(event) {
-        document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
-        document.getElementById('img-auth-b').style.border = '0px solid #000000';
+        if (!document.getElementById('authenticate').disabled) {
+          document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
+          document.getElementById('img-auth-b').style.border = '0px solid #000000';
+        }
       });
 
       document.getElementById('img-auth-b').addEventListener('click', function(event) {
-        document.getElementById('img-auth-a').style.border = '0px solid #000000';
-        document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
+        if (!document.getElementById('authenticate').disabled) {
+          document.getElementById('img-auth-a').style.border = '0px solid #000000';
+          document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
+        }
       });
 
       document.getElementById('previewImage').addEventListener('click', function(event) {
