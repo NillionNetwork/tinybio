@@ -33,8 +33,7 @@
       h3 {
         width:100%;
         margin-bottom:0px;
-        padding:4px 10px 6px 10px;
-        border-top:1px solid #000000; border-left:1px solid #000000; border-right:1px solid #000000;
+        padding:0px 0px 6px 0px;
         text-align:left;
         font-size:22px;
       }
@@ -44,7 +43,7 @@
       .grid-row-connectors { grid-template-columns:3fr 9fr; }
       .grid-row-nodes { grid-template-columns:3fr 3fr 3fr 3fr; }
       .grid-row-result { grid-template-columns:3fr 9fr; }
-      .grid-col { padding:6px; }
+      .grid-col { padding:0px 6px 0px 6px; }
       .guide > ol > li { margin-left:8px; font-size:42px; font-weight:bold; }
       .guide > ol > li > div {
         position:relative;
@@ -53,17 +52,19 @@
         line-height:21px; 
         font-size:18px; font-weight:normal;
       }
-      .content { width:100%; margin:0px 10px 0px 0px; padding:4px 10px 4px 10px; text-align:left; }
-      .entity { margin-top:0px; padding:20px 24px 20px 24px; border:1px solid #000000; }
-      .node > h3 { background-color:#0000FF; color:#FFFFFF; }
-      .node > .entity { border-top:1px solid #FFFFFF; background-color:#0000FF; color:#FFFFFF; }
+      .content { height:100%; width:100%; margin:0px 10px 0px 0px; padding:0px 10px 0px 10px; text-align:left; }
+      .entity { height:100%; margin-top:0px; padding:20px 24px 20px 24px; border:1px solid #000000; }
+      .node { height:100%; }
+      .node > h3 { background-color:#00003F; color:#FFFFFF; }
+      .node > .entity { border-top:1px solid #FFFFFF; background-color:#00003F; color:#FFFFFF; }
       .activated > h3 { background-color:#000000; color:#FFFFFF; }
       .activated > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
       .clickable > img { cursor:pointer; }
       img { width:100%; border:1px solid #FFFFFF; }
       .raw { display:inline-block; width:100%; overflow:hidden; word-break: break-word; word-wrap:break-word; font-family:Monospace; font-size:10px; }
-      .client { padding-top:0px; }
-      .client .raw { aspect-ratio:1; }
+      .client { height:100%; }
+      .client > .row { }
+      .client > .row > .col { }
       .box-title {
         width:100%;
         margin-top:16px;
@@ -86,15 +87,9 @@
         font-size:10px;
         color:#999999;
       }
-      .data-box > img {
-        border:4px solid #FFFFFF;
-      }
-      .data-box > img:hover {
-        border:4px solid #0000FF;
-      }
-      .action {
-        margin-top:20px;
-      }
+      .data-box > img { border:4px solid #FFFFFF; }
+      .data-box > .clickable:hover { border:4px solid #0000FF; }
+      .action { margin-top:20px; }
       .file-choose {
         width:100%;
         margin:0px 2px 2px 0px;
@@ -136,9 +131,7 @@
         background-color:#0000FF;
         color:#FFFFFF;
       }
-      button:hover {
-        background-color:#000000;
-      }
+      button:hover { background-color:#000000; }
       button:active {
         margin:2px 0px 0px 2px;
         -webkit-box-shadow: 0px 0px 0px 0px #555555;
@@ -150,24 +143,25 @@
         color:#777777;
       }
       #result-bar {
-        min-width:10%; height:100px;
+        min-width:10%;
         margin-top:0px;
         padding:20px;
         background-color:#FFFFFF;
         text-align:center;
+        line-height:44px;
         font-size:40px;
         color:#FFFFFF;
       }
-      .connectors { height:100px; margin:0px !important; padding:0px; width:100%; height:100%;}
+      .grid-row-connectors .grid-col { height:100px; }
       canvas { width:100%; height:100px; }
       .card-deck .card { border:0px; min-width:220px; }
       .card { min-width:350px !important; }
       .card-body { padding:2px 10px 2px 10px; line-height:18px; font-size:14px; }
-      footer { width:100%; margin:auto auto 0 auto; padding:16px 0px 16px 0px; background-color:#000000; color:#FFFFFF; }
+      footer { width:100%; margin:auto auto 0 auto; padding:16px 0px 16px 0px; background-color:#0000FF; color:#FFFFFF; }
       footer a { color:#FFFFFF; }
       footer a:hover { color:#FFFFFF; }
       footer .card-deck { margin-bottom:0px !important; }
-      footer .card { margin-bottom:0px !important; border:0px; background-color:#000000; }
+      footer .card { margin-bottom:0px !important; border:0px; background-color:#0000FF; }
       footer .card-body-items { padding:8px 20px 0px 20px; }
       footer .card-body-items-left { float:left; }
       footer .card-body-items-right { float:right; }
@@ -190,6 +184,15 @@
       @media all and (max-width:900px) {
         .client .raw { /* display:none; */ }
         .client > .row > .col-xs-6 { /* width:100%; */ }
+      }
+      @media all and (max-width:767px) {
+        .guide > ol > li { font-size:26px; }
+        .guide > ol > li > div {
+          top:-10px;
+          padding-right:0px;
+          line-height:14px;
+          font-size:12px;
+        }
       }
       @media all and (max-width:618px) {
         #header { margin-top:50px; }
@@ -237,13 +240,13 @@
         </div>
         <div class="grid-col">
           <div class="content">
-            <h3>Registration</h3>
             <div class="entity client">
+              <h3>Registration</h3>
               <div class="row row-cols-sm-1 row-cols-md-2">
                 <div class="col">
                   <div class="box-title">Image Selection</div>
                   <div class="data-box clickable" style="margin-bottom:6px;">
-                    <img id="previewImage" src="reg-obama.png" />
+                    <img id="img-reg" src="reg-obama.png" />
                   </div>
                   <label id="imageUploaderLabel" class="file-choose">
                     <input type="file" id="imageUploader" accept="image/*" style="width:100% !important; display:none;" />
@@ -266,35 +269,47 @@
           </div>
         </div>
         <div class="grid-col">
-          <div id="login-user-a" class="content">
-            <h3>Authentication</h3>
+          <div class="content" id="panel-authenticate" style="opacity:0.2;">
             <div class="entity client">
-              <div class="row row-cols-sm-1 row-cols-md-2">
-                <div class="col">
-                  <div class="box-title">Image Selection</div>
-                  <div class="row">
-                    <div class="col">
-                      <div class="data-box clickable">
-                        <img id="img-auth-a" src="auth-obama.png" />
+              <div style="display:table; height:100%;">
+                <div style="display:table-row;">
+                  <h3>Authentication</h3>
+                </div>
+                <div style="display:table-row;">
+                  <div style="display:table-cell;">
+                    <div class="row row-cols-sm-1 row-cols-md-2">
+                      <div class="col">
+                        <div class="box-title">Image Selection</div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="data-box" id="img-example-a" >
+                              <img id="img-auth-a" src="auth-obama.png" />
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="data-box" id="img-example-b" >
+                              <img id="img-auth-b" src="auth-biden.png" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col">
-                      <div class="data-box clickable">
-                        <img id="img-auth-b" src="auth-biden.png" />
+                      <div class="col">
+                        <div class="box-title">Authentication Data</div>
+                        <div class="data-box" style="aspect-ratio:1;">
+                          <div class="raw" id="auth_login">Please select an image on the left</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col">
-                  <div class="box-title">Authentication Data</div>
-                  <div class="data-box" style="aspect-ratio:1;">
-                    <div class="raw" id="auth_obama_login">Please select an image on the left</div>
+                <div style="display:table-row;">
+                  <div style="display:table-cell; vertical-align:bottom;">
+                    <div class="row row-cols-1 action">
+                      <div class="col">
+                        <button id="authenticate" disabled>Mask &amp; Authenticate</button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="row row-cols-1 action">
-                <div class="col">
-                  <button id="authenticate" disabled>Mask &amp; Authenticate</button>
                 </div>
               </div>
             </div>
@@ -304,14 +319,12 @@
       <div class="grid-row grid-row-connectors">
         <div class="grid-col"></div>
         <div class="grid-col">
-          <div class="col">
-            <canvas id="canvas-register-and-login"></canvas>
-          </div>
+          <canvas id="canvas-register-and-login"></canvas>
         </div>
       </div>
       <div class="grid-row grid-row-nodes">
         <div class="grid-col">
-          <div class="guide">
+          <div class="guide" id="step-nodes" style="opacity:0.2;">
             <ol start="2">
               <li>
                 <div>
@@ -322,9 +335,9 @@
           </div>
         </div>
         <div class="grid-col">
-          <div class="content node">
-            <h3>Node 1</h3>
+          <div class="content node" id="panel-node-one" style="opacity:0.2;">
             <div class="entity">
+              <h3>Node 1</h3>
               <div class="row row-cols-1">
                 <div class="col-xs-6"><div class="raw" id="node-one"></div></div>
               </div>
@@ -332,9 +345,9 @@
           </div>
         </div>
         <div class="grid-col">
-          <div class="content node">
-            <h3>Node 2</h3>
+          <div class="content node" id="panel-node-two" style="opacity:0.2;">
             <div class="entity">
+              <h3>Node 2</h3>
               <div class="row row-cols-1">
                 <div class="col-xs-6"><div class="raw" id="node-two"></div></div>
               </div>
@@ -342,9 +355,9 @@
           </div>
         </div>
         <div class="grid-col">
-          <div class="content node">
-            <h3>Node 3</h3>
+          <div class="content node" id="panel-node-three" style="opacity:0.2;">
             <div class="entity">
+              <h3>Node 3</h3>
               <div class="row row-cols-1">
                 <div class="col-xs-6"><div class="raw" id="node-three"></div></div>
               </div>
@@ -355,14 +368,12 @@
       <div class="grid-row grid-row-connectors">
         <div class="grid-col"></div>
         <div class="grid-col">
-          <div class="col">
-            <canvas id="canvas-reconstruct"></canvas>
-          </div>
+          <canvas id="canvas-reconstruct"></canvas>
         </div>
       </div>
       <div class="grid-row grid-row-result">
         <div class="grid-col">
-          <div class="guide">
+          <div class="guide" id="step-output" style="opacity:0.2;">
             <ol start="3">
               <li>
                 <div>
@@ -373,9 +384,9 @@
           </div>
         </div>
         <div class="grid-col">
-          <div class="content">
-            <h3>Network Output</h3>
+          <div class="content" id="panel-output" style="opacity:0.2;">
             <div class="entity">
+              <h3>Network Output</h3>
               <div class="row row-cols-1">
                 <div class="col-xs-6">
                   <div id="result-bar"></div>
@@ -411,83 +422,29 @@
       packages = ["tinynmc"]
     </py-config>
     <section class="pyscript">
+      <py-script src="https://raw.githubusercontent.com/nillion-oss/tinybio/main/src/tinybio/tinybio.py"></py-script>
       <py-script>
-        import js
-        from js import document
-        from pyodide.ffi import create_proxy
-        import math
-        from tinynmc import *
-
         from typing import Sequence, Iterable
-        from modulo import modulo
+        import math
+        from pyodide.ffi import create_proxy
+        import js
 
-        _PRECISION = 16
-
-        def _encode(data, is_login=0):
-            encoding = [round(value * (2 ** _PRECISION)) for value in data]
-
-            coords_to_values = {(is_login, 0): sum([value * value for value in encoding])}
-            for (index, value) in enumerate(encoding, 2):
-                coords_to_values[(index, is_login)] = ((is_login * 3) - 2) * value
-
-            return coords_to_values
-
-        class tinybio:
-            class node(tinynmc.node):
-                """
-                Data structure for maintaining the information associated with a node
-                and performing node operations.
-                """
-                def authenticate(self, data):
-                    """
-                    Perform computation associated with a login operation.
-                    """
-                    return self.compute(self._signature, data)
-
-            def preprocess(length: int, nodes: Sequence[node]):
-                """
-                Simulate a preprocessing phase among the collection of nodes for a workflow
-                that supports registration and authentication data vectors of the specified
-                length.
-                """
-                signature = [1, 1] + ([2] * length)
-                tinynmc.preprocess(signature, nodes)
-                for node in nodes:
-                    setattr(node, '_signature', signature)
-
-            def registration_request(data):
-                return _encode(data, 0).keys()
-
-            def authentication_request(data):
-                return _encode(data, 1).keys()
-
-            def registration_token(masks, data):
-                return tinynmc.masked_factors(_encode(data, 0), masks)
-
-            def authentication_token(masks, data):
-                return tinynmc.masked_factors(_encode(data, 1), masks)
-
-            def reveal(shares: Iterable[modulo]) -> float:
-                """
-                Reconstruct the result of the overall workflow from its shares and convert
-                it into a meaningful output (as a percentage).
-                """
-                return int(sum(shares)) / (2 ** (2 * _PRECISION))
+        token_registration = {} # Global.
 
         def show_cutoff(s):
             _limit = 30
             return s[:(_limit - 3)] + '...' if len(s) > _limit else s
 
-        def contribution_show(data, element_id):
+        def show_contribution(data, element_id):
             lines = []
             for (k, v) in list(data.items())[:9]:
                 lines.append(show_cutoff(str(int(v))))
 
-            element = document.getElementById(element_id)
+            element = js.document.getElementById(element_id)
             element.innerHTML = '<div>' + ('<br/>'.join(lines + ['...'])) + '</div>'
 
-        def computation_show(data, element_id):
-            element = document.getElementById(element_id)
+        def show_computation(data, element_id):
+            element = js.document.getElementById(element_id)
             element.innerHTML = show_cutoff(str(int(data)))
 
         def compute_and_reveal(nodes, broadcast):
@@ -495,64 +452,36 @@
             for (name, node) in zip(['one', 'two', 'three'], nodes):
                 result_share = node.authenticate(broadcast)
                 shares.append(result_share)
-                computation_show(result_share, 'node-' + name)
+                show_computation(result_share, 'node-' + name)
 
-            result = tinybio.reveal(shares)
+            result = reveal(shares)
 
-            document.getElementById('result-bar').style.color = '#000000'
-            document.getElementById('result-bar').style.backgroundColor = '#FFFFFF'
-            document.getElementById('result-bar').style.width = '100%' # percentage_str
-            document.getElementById('result-bar').innerHTML = str(result)[:7]
+            js.document.getElementById('result-bar').style.color = '#000000'
+            js.document.getElementById('result-bar').style.backgroundColor = '#FFFFFF'
+            js.document.getElementById('result-bar').style.width = '100%'
+            js.document.getElementById('result-bar').innerHTML = \
+                'Euclidean distance between descriptors: ' + str(result)[:7] + '.'
 
-        def run_a(_):
-            document.getElementById('authenticate').disabled = True
-            document.getElementById('active').value = 'a'
-            document.getElementById('img-auth-a').style.cursor = 'auto'
-            document.getElementById('img-auth-b').style.cursor = 'auto'
-            js.authenticated = True
-            js.connectors()
-            data_obama_login = list(js.getLoginUserA())
-            masks = [node.masks(tinybio.authentication_request(data_obama_login)) for node in nodes]
-            token_authentication = tinybio.authentication_token(masks, data_obama_login)
-            contribution_show(token_authentication, 'auth_obama_login')
-            compute_and_reveal(nodes, [token_registration, token_authentication])
-            
-        def run_b(_):
-            document.getElementById('authenticate').disabled = True
-            document.getElementById('active').value = 'b'
-            document.getElementById('img-auth-a').style.cursor = 'auto'
-            document.getElementById('img-auth-b').style.cursor = 'auto'
-            js.authenticated = True
-            js.connectors()
-            data_biden_login = list(js.getLoginUserB())
-            masks = [node.masks(tinybio.authentication_request(data_biden_login)) for node in nodes]
-            token_authentication = tinybio.authentication_token(masks, data_biden_login)
-            contribution_show(token_authentication, 'auth_biden_login')
-            compute_and_reveal(nodes, [token_registration, token_authentication])
-
-        def submittedPhoto(_):
-            document.getElementById('register').disabled = True
-            document.getElementById('imageUploader').disabled = True
-            document.getElementById('imageUploaderLabel').style.backgroundColor = '#CCCCCC'
-            document.getElementById('imageUploaderLabel').style.color = '#777777'
-            document.getElementById('imageUploaderLabel').style.cursor = 'auto'
-            document.getElementById('previewImage').style.cursor = 'auto'
-            document.getElementById('previewImage').style.border = '4px solid #0000FF'
-            js.connectors_register()
+        def mask_and_register(_):
             global token_registration
-            registerInput = list(js.getRegisterInput())
-            masks = [node.masks(tinybio.registration_request(registerInput)) for node in nodes]
-            token_registration = tinybio.registration_token(masks, registerInput)
-            contribution_show(token_registration, 'auth_obama_register')
-        
-        token_registration = {}
-        nodes = [tinybio.node(), tinybio.node(), tinybio.node()]
-        tinybio.preprocess(136, nodes)
-        e = document.getElementById('register')
-        e.addEventListener('click', create_proxy(submittedPhoto))
+            js.maskAndRegister()
+            descriptor = list(js.getRegisterInput())
+            masks = [node.masks(registration_request(descriptor)) for node in nodes]
+            token_registration = registration_token(masks, descriptor)
+            show_contribution(token_registration, 'auth_obama_register')
 
-        e = document.getElementById('authenticate')
-        e.addEventListener('click', create_proxy(run_a))
+        def mask_and_authenticate(_):
+            js.maskAndAuthenticate()
+            descriptor = list(js.getLoginUser())
+            masks = [node.masks(authentication_request(descriptor)) for node in nodes]
+            token_authentication = authentication_token(masks, descriptor)
+            show_contribution(token_authentication, 'auth_login')
+            compute_and_reveal(nodes, [token_registration, token_authentication])
+
+        nodes = [node(), node(), node()]
+        preprocess(136, nodes)
+        js.document.getElementById('register').addEventListener('click', create_proxy(mask_and_register))
+        js.document.getElementById('authenticate').addEventListener('click', create_proxy(mask_and_authenticate))
       </py-script>
       <input id="active" type="hidden" value="none"/>
     </section>
@@ -568,44 +497,43 @@
       var loginUserAValue;
       var loginUserBValue;
       var regImageChosen = false;
+      var authImageChosen = null;
       var authenticated = false;
 
       function getRegisterInput() {
         return registerInputValue;
       }
 
-      function getLoginUserA() {
-        return loginUserAValue;
+      function getLoginUser() {
+        return (authImageChosen == "a") ? loginUserAValue : loginUserBValue;
       }
 
-      function getLoginUserB() {
-        return loginUserBValue;
-      }
       const canvas_register_and_login = document.getElementById("canvas-register-and-login");
       const context_register_and_login = canvas_register_and_login.getContext("2d");
       const canvas_reconstruct = document.getElementById("canvas-reconstruct");
       const context_reconstruct = canvas_reconstruct.getContext("2d");
 
       function vertical(context, x1, y1, x2, y2, color) {
-          context.fillStyle = color;
-          context.fillRect(x1 - 1, y1, x2 - x1 + 2, y2 - y1);
+        context.fillStyle = color;
+        context.fillRect(x1 - 1, y1, x2 - x1 + 2, y2 - y1);
       }
 
       function horizontal(context, x1, y1, x2, y2, color) {
-          context.fillStyle = color;
-          context.fillRect(x1 - 1, y1 - 2, x2 - x1 + 2, y2 - y1 + 4);
+        context.fillStyle = color;
+        context.fillRect(x1 - 1, y1 - 2, x2 - x1 + 2, y2 - y1 + 4);
       }
 
       function containImages() {
-          /*var preview = document.getElementById('previewImage');
-          let maxHeight = Math.min(100, preview.parentElement.offsetHeight);
-          if (preview.offsetHeight > maxHeight) {
-            preview.style.width = ((preview.offsetWidth * maxHeight) / preview.offsetHeight) + 'px';
-            preview.style.height = maxHeight + 'px';
-          }*/
+        /*var preview = document.getElementById('img-reg');
+        let maxHeight = Math.min(100, preview.parentElement.offsetHeight);
+        if (preview.offsetHeight > maxHeight) {
+          preview.style.width = ((preview.offsetWidth * maxHeight) / preview.offsetHeight) + 'px';
+          preview.style.height = maxHeight + 'px';
+        }*/
       }
 
-      function connectors_register() {
+      function connectorsRegister() {
+        if (regImageChosen) {
           // Registration and login connectors.
           canvas_register_and_login.width = canvas_register_and_login.offsetWidth;
           let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
@@ -615,24 +543,19 @@
           vertical(context_register_and_login, w/2, h/2, w/2, h, "#CCCCCC");
           vertical(context_register_and_login, w/6, h/2, w/6, h, "#CCCCCC");
           vertical(context_register_and_login, (5*w)/6, h/2, (5*w)/6, h, "#CCCCCC");
+        }
       }
 
-      function connectors() {
-          containImages();
-
-          connectors_register();
-
+      function connectorsAuthenticate() {
+        if (authenticated) {
+          // Authentication connectors.
           let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
-
-          const active = document.getElementById('active').value;
-          if (active !== 'none') {
-              const offset = 30;
-              vertical(context_register_and_login, (5*w)/6 + offset, 0, (5*w)/6 + offset, (3*h)/4, "#000000");
-              horizontal(context_register_and_login, w/6 + offset, (3*h)/4, (5*w)/6 + offset, (3*h)/4, "#000000");
-              vertical(context_register_and_login, w/2 + offset, (3*h)/4, w/2 + offset, h, "#000000");
-              vertical(context_register_and_login, w/6 + offset, (3*h)/4, w/6 + offset, h, "#000000");
-              vertical(context_register_and_login, (5*w)/6 + offset, (3*h)/4, (5*w)/6 + offset, h, "#000000");
-          }
+          const offset = 30;
+          vertical(context_register_and_login, (5*w)/6 + offset, 0, (5*w)/6 + offset, (3*h)/4, "#000000");
+          horizontal(context_register_and_login, w/6 + offset, (3*h)/4, (5*w)/6 + offset, (3*h)/4, "#000000");
+          vertical(context_register_and_login, w/2 + offset, (3*h)/4, w/2 + offset, h, "#000000");
+          vertical(context_register_and_login, w/6 + offset, (3*h)/4, w/6 + offset, h, "#000000");
+          vertical(context_register_and_login, (5*w)/6 + offset, (3*h)/4, (5*w)/6 + offset, h, "#000000");
 
           // Reconstruction connectors.
           canvas_reconstruct.width = canvas_reconstruct.offsetWidth;
@@ -643,14 +566,19 @@
           vertical(context_reconstruct, (5*w)/6, 0, (5*w)/6, h/2, "#0000FF");
           horizontal(context_reconstruct, w/6, h/2, (5*w)/6, h/2, "#0000FF");
           vertical(context_reconstruct, w/2, h/2, w/2, h, "#0000FF");
+        }
       }
 
       async function processImage(imgElement) {
-        const detection = await faceapi.detectSingleFace(imgElement, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceExpressions()
+        const detection = await
+          faceapi.detectSingleFace(
+            imgElement,
+            new faceapi.TinyFaceDetectorOptions()
+          )
+          .withFaceLandmarks()
+          .withFaceExpressions();
 
-        return detection
+        return detection;
       }
 
       function normalizeDetectedImageCoords(processedImg) {
@@ -668,35 +596,48 @@
         return normalizedCoords.flat();
       }
 
-      // Handle image from image uploader
-      document.getElementById('imageUploader').addEventListener('change', function(event) {
+      // Handle image from image selector.
+      document.getElementById('imageUploader').addEventListener(
+        'change',
+        function(event) {
           var file = event.target.files[0];
           var reader = new FileReader();
 
           reader.onload = function(e) {
-              var img = document.getElementById('previewImage');
-              img.src = URL.createObjectURL(file);
-              img.onload = () => URL.revokeObjectURL(img.src);  // Free memory
-              img.style.display = 'block';
+            var img = document.getElementById('img-reg');
+            img.src = URL.createObjectURL(file);
+            img.onload = () => URL.revokeObjectURL(img.src);  // Free memory
+            img.style.display = 'block';
 
-              // Process the uploaded image with faceapi, then normalize image coordinates
-              processImage(img).then((processedImg)=> {
-                const normalized = normalizeDetectedImageCoords(processedImg);
-                
-                // set global variable to pass input value to pyscript
-                registerInputValue = normalized;
-              });
+            // Process the uploaded image with faceapi, then normalize image coordinates
+            processImage(img).then((processedImg)=> {
+              const normalized = normalizeDetectedImageCoords(processedImg);
               
-              containImages();
-              regImageChosen = true;
-              document.getElementById('previewImage').style.border = '4px solid #0000FF';
-              document.getElementById('register').disabled = false;
+              // set global variable to pass input value to pyscript
+              registerInputValue = normalized;
+            });
+            
+            containImages();
+            regImageChosen = true;
+            document.getElementById('img-reg').style.border = '4px solid #0000FF';
+            document.getElementById('register').disabled = false;
           };
           reader.readAsDataURL(file);
+          regImageChosen = true;
+        }
+      );
+
+      document.getElementById('img-reg').addEventListener('click', function(event) {
+        if (!regImageChosen) {
+          document.getElementById('img-reg').style.border = '4px solid #0000FF';
+          document.getElementById('register').disabled = false;
+          regImageChosen = true;
+        }
       });
 
       document.getElementById('img-auth-a').addEventListener('click', function(event) {
         if (regImageChosen && !authenticated) {
+          authImageChosen = 'a';
           document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
           document.getElementById('img-auth-b').style.border = '0px solid #000000';
           document.getElementById('authenticate').disabled = false;
@@ -705,49 +646,86 @@
 
       document.getElementById('img-auth-b').addEventListener('click', function(event) {
         if (regImageChosen && !authenticated) {
+          authImageChosen = 'b';
           document.getElementById('img-auth-a').style.border = '0px solid #000000';
           document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
           document.getElementById('authenticate').disabled = false;
         }
       });
 
-      document.getElementById('previewImage').addEventListener('click', function(event) {
-        document.getElementById('previewImage').style.border = '4px solid #0000FF';
-        document.getElementById('register').disabled = false;
-        regImageChosen = true;
-      });
+      function maskAndRegister() {
+        document.getElementById("register").disabled = true;
+        document.getElementById("imageUploader").disabled = true;
+        document.getElementById("imageUploaderLabel").style.backgroundColor = "#CCCCCC";
+        document.getElementById("imageUploaderLabel").style.color = "#777777";
+        document.getElementById("imageUploaderLabel").style.cursor = "auto";
+        document.getElementById("img-reg").style.cursor = "auto";
+        document.getElementById("img-reg").style.border = "4px solid #999999";
+        connectorsRegister();
 
-      async function loadModels() {
+        [
+          "panel-authenticate",
+          "step-nodes", "panel-node-one", "panel-node-two", "panel-node-three",
+        ].map(function(elementId) {
+          document.getElementById(elementId).style.opacity = 1;
+        });
+
+        document.getElementById("img-example-a").classList.add("clickable");
+        document.getElementById("img-example-b").classList.add("clickable");
+      }
+
+      function maskAndAuthenticate(value) {
+        document.getElementById("authenticate").disabled = true;
+        document.getElementById("active").value = value;
+        document.getElementById("img-auth-a").style.cursor = "auto";
+        document.getElementById("img-auth-b").style.cursor = "auto";
+        document.getElementById("img-auth-" + authImageChosen).style.border = "4px solid #999999";
+        authenticated = true;
+        connectorsAuthenticate();
+
+        [
+          "step-output", "panel-output"
+        ].map(function(elementId) {
+          document.getElementById(elementId).style.opacity = 1;
+        });
+      }
+
+      async function initialize() {
         await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
         await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
         await faceapi.nets.faceRecognitionNet.loadFromUri('./models');
         await faceapi.nets.faceExpressionNet.loadFromUri('./models');
         await faceapi.nets.ageGenderNet.loadFromUri('./models');   
 
-        // process user a
-        var userA = document.getElementById('img-auth-a');
-        processImage(userA).then((processedImg)=> {
-          const normalized = normalizeDetectedImageCoords(processedImg);
-          loginUserAValue = normalized;
-        })
-
-        // process user b
-        var userB = document.getElementById('img-auth-b');
-        processImage(userB).then((processedImg)=> {
-          const normalized = normalizeDetectedImageCoords(processedImg);
-          loginUserBValue = normalized;
-        })
-  
-        // Process the default image.
-        var img = document.getElementById('previewImage');
-        processImage(img).then((processedImg)=> {
+        // Process registration example image.
+        var img = document.getElementById("img-reg");
+        processImage(img).then((processedImg) => {
           const normalized = normalizeDetectedImageCoords(processedImg);
           registerInputValue = normalized;
         });
+
+        // Process first authentication example image.
+        var userA = document.getElementById("img-auth-a");
+        processImage(userA).then((processedImg)=> {
+          const normalized = normalizeDetectedImageCoords(processedImg);
+          loginUserAValue = normalized;
+        });
+
+        // Process second authentication example image.
+        var userB = document.getElementById("img-auth-b");
+        processImage(userB).then((processedImg)=> {
+          const normalized = normalizeDetectedImageCoords(processedImg);
+          loginUserBValue = normalized;
+        });
+      }
+      
+      function resize() {
+        connectorsRegister();
+        connectorsAuthenticate();
       }
 
-      window.onload = loadModels;
-      window.onresize = connectors;
+      window.onload = initialize;
+      window.onresize = resize;
     </script>
   </body>
 </html>
