@@ -80,6 +80,7 @@ def rtd_url_for_installed_version(name, subdomain=None):
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
+    'modulo': (rtd_url_for_installed_version('modulo', 'modulo-lib'), None),
     'tinynmc': (rtd_url_for_installed_version('tinynmc'), None),
 }
 
