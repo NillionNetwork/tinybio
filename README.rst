@@ -4,7 +4,7 @@ tinybio
 
 Minimal pure-Python library that implements a basic version of a secure decentralized biometric authentication functionality via a `secure multi-party computation protocol <https://eprint.iacr.org/2023/1740>`__.
 
-|pypi| |readthedocs|
+|pypi| |readthedocs| |actions|
 
 .. |pypi| image:: https://badge.fury.io/py/tinybio.svg
    :target: https://badge.fury.io/py/tinybio
@@ -13,6 +13,10 @@ Minimal pure-Python library that implements a basic version of a secure decentra
 .. |readthedocs| image:: https://readthedocs.org/projects/tinybio/badge/?version=latest
    :target: https://tinybio.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
+
+.. |actions| image:: https://github.com/nillion-oss/tinybio/workflows/lint-test-cover-docs/badge.svg
+   :target: https://github.com/nillion-oss/tinybio/actions/workflows/lint-test-cover-docs.yml
+   :alt: GitHub Actions status.
 
 Installation and Usage
 ----------------------
