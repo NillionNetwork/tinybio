@@ -22,6 +22,12 @@ Repository = "https://github.com/nillion-oss/tinybio"
 Documentation = "https://tinybio.readthedocs.io"
 
 [project.optional-dependencies]
+docs = [
+    "toml~=0.10.2",
+    "sphinx~=4.2.0",
+    "sphinx-rtd-theme~=1.0.0",
+    "sphinx-autodoc-typehints~=1.12.0"
+]
 test = [
     "pytest~=7.2",
     "pytest-cov~=4.0"
@@ -44,4 +50,4 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --cov=tinynmc"
+addopts = "--doctest-modules --ignore=docs --cov=tinybio --cov-report term-missing"
