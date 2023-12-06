@@ -59,8 +59,8 @@
       .node > .entity { border-top:1px solid #FFFFFF; background-color:#00003F; color:#FFFFFF; }
       .activated > h3 { background-color:#000000; color:#FFFFFF; }
       .activated > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
-      .clickable > img { cursor:pointer; }
       img { width:100%; border:1px solid #FFFFFF; }
+      .clickable { cursor:pointer; }
       .raw { display:inline-block; width:100%; overflow:hidden; word-break: break-word; word-wrap:break-word; font-family:Monospace; font-size:10px; }
       .client { height:100%; }
       .client > .row { }
@@ -88,7 +88,7 @@
         color:#999999;
       }
       .data-box > img { border:4px solid #FFFFFF; }
-      .data-box > .clickable:hover { border:4px solid #0000FF; }
+      .clickable:hover { border:4px solid #0000FF; }
       .action { margin-top:20px; }
       .file-choose {
         width:100%;
@@ -148,8 +148,8 @@
         padding:20px;
         background-color:#FFFFFF;
         text-align:center;
-        line-height:44px;
-        font-size:40px;
+        line-height:36px;
+        font-size:32px;
         color:#FFFFFF;
       }
       .grid-row-connectors .grid-col { height:100px; }
@@ -186,6 +186,9 @@
         .client > .row > .col-xs-6 { /* width:100%; */ }
       }
       @media all and (max-width:767px) {
+        .entity { padding:10px; }
+        .content { padding:0px; }
+        .guide > ol { margin-left:-12px; }
         .guide > ol > li { font-size:26px; }
         .guide > ol > li > div {
           top:-10px;
@@ -193,13 +196,18 @@
           line-height:14px;
           font-size:12px;
         }
+        h3 { font-size:14px; }
+        .box-title { font-size:12px; }
+        .file-choose { font-size:12px; }
+        button { font-size:12px; }
+        #result-bar { line-height:28px; font-size:24px; }
       }
       @media all and (max-width:618px) {
         #header { margin-top:50px; }
         #license-phrase { /* display:none; */ }
       }
       @media all and (max-width:575px) {
-        .client > .row > .col { flex:0 0 auto !important; }
+        .client > .row > .col { /* flex:0 0 auto !important; */ }
       }
       @media all and (max-width:400px) {
         .card { min-width:250px !important; }
@@ -215,9 +223,8 @@
             <h1><b>tinybio</b>: Secure Decentralized Biometric Authentication Demo</h1>
             <hr/>
             <h2>
-              This demo simulates a secure multi-party computation network <b>in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinybio">tinybio</a> and underlying <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> libraries using <a href="https://pyscript.net">PyScript</a>. 
-              The <a href="https://github.com/ageitgey/face_recognition">Face Recognition</a> library was used to generate the inputs for each of the images below (the inputs in this demo are fixed because PyScript can only load libraries that are pure Python).
-              Click on one of the two <b>Login</b> options to view the computation and output.
+              This <a href="https://nillion.pub/decentralized-multifactor-authentication.pdf">biometric authentication</a> demo simulates a secure multi-party computation (MPC) network <b>in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinybio">tinybio</a> and underlying <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> libraries using <a href="https://pyscript.net">PyScript</a>.
+              The <a href="https://justadudewhohacks.github.io/face-api.js/docs/index.html">face-api.js</a> library is used to generate descriptors.
             </h2>
           </div>
         </div>
@@ -231,7 +238,7 @@
               <ol start="1">
                 <li>
                   <div>
-                    During both registration and authentication, the image is encoded as a vector, masks are requested from the nodes, and secret shares of the masked image are distributed among the nodes.
+                    During both registration and authentication, the selected image is encoded as a descriptor (<i>i.e.</i>, a vector numeric values), masks are requested from the nodes, and secret shares of the masked image are broadcast to all the nodes.
                   </div>
                 </li>
               </ol>
@@ -241,28 +248,42 @@
         <div class="grid-col">
           <div class="content">
             <div class="entity client">
-              <h3>Registration</h3>
-              <div class="row row-cols-sm-1 row-cols-md-2">
-                <div class="col">
-                  <div class="box-title">Image Selection</div>
-                  <div class="data-box clickable" style="margin-bottom:6px;">
-                    <img id="img-reg" src="reg-obama.png" />
-                  </div>
-                  <label id="imageUploaderLabel" class="file-choose">
-                    <input type="file" id="imageUploader" accept="image/*" style="width:100% !important; display:none;" />
-                    Choose File
-                  </label>
+              <div style="display:table; height:100%;">
+                <div style="display:table-row;">
+                  <h3>Registration</h3>
                 </div>
-                <div class="col">
-                  <div class="box-title">Authentication Data</div>
-                  <div class="data-box" style="aspect-ratio:1;">
-                    <div class="raw" id="auth_obama_register">Please select an image on the left</div>
+                <div style="display:table-row;">
+                  <div style="display:table-cell; vertical-align:top;">
+                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-2">
+                      <div class="col-md">
+                        <div class="box-title">Image</div>
+                        <div>
+                          <div class="data-box" style="margin-bottom:6px;">
+                            <img id="img-reg" class="clickable" src="reg-obama.png" />
+                          </div>
+                          <label id="imageUploaderLabel" class="file-choose">
+                            <input type="file" id="imageUploader" accept="image/*" style="width:100% !important; display:none;" />
+                            Choose File
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-md">
+                        <div class="box-title">Descriptor</div>
+                        <div class="data-box" style="aspect-ratio:1;">
+                          <div class="raw" id="auth_obama_register">Please select an image on the left</div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="row row-cols-1 action">
-                <div class="col">
-                  <button id="register" disabled>Mask &amp; Register</button>
+                <div style="display:table-row;">
+                  <div style="display:table-cell; vertical-align:bottom;">
+                    <div class="row row-cols-1 action">
+                      <div class="col">
+                        <button id="register" disabled>Mask &amp; Register</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -276,25 +297,27 @@
                   <h3>Authentication</h3>
                 </div>
                 <div style="display:table-row;">
-                  <div style="display:table-cell;">
-                    <div class="row row-cols-sm-1 row-cols-md-2">
-                      <div class="col">
-                        <div class="box-title">Image Selection</div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="data-box" id="img-example-a" >
-                              <img id="img-auth-a" src="auth-obama.png" />
+                  <div style="display:table-cell; vertical-align:top;">
+                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-2">
+                      <div class="col-md">
+                        <div class="box-title">Image</div>
+                        <div>
+                          <div class="row">
+                            <div class="col">
+                              <div class="data-box">
+                                <img id="img-auth-a" src="auth-obama.png" />
+                              </div>
                             </div>
-                          </div>
-                          <div class="col">
-                            <div class="data-box" id="img-example-b" >
-                              <img id="img-auth-b" src="auth-biden.png" />
+                            <div class="col">
+                              <div class="data-box">
+                                <img id="img-auth-b" src="auth-biden.png" />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col">
-                        <div class="box-title">Authentication Data</div>
+                      <div class="col-md">
+                        <div class="box-title">Descriptor</div>
                         <div class="data-box" style="aspect-ratio:1;">
                           <div class="raw" id="auth_login">Please select an image on the left</div>
                         </div>
@@ -328,7 +351,7 @@
             <ol start="2">
               <li>
                 <div>
-                  Each node receives secret shares of the vectors corresponding the two images, and then locally computes its secret share of the overall distance between the two vectors.
+                  Each node receives secret shares of the descriptor vectors corresponding the two images, and then locally computes its secret share of the overall Euclidean distance between the two vectors.
                 </div>
               </li>
             </ol>
@@ -377,7 +400,7 @@
             <ol start="3">
               <li>
                 <div>
-                  A designated third party receives the secret shares of the result from the nodes and reconstructs the overall output.
+                  A designated third party receives a secret shares of the result from each node and reconstructs the overall output.
                 </div>
               </li>
             </ol>
@@ -639,7 +662,7 @@
         if (regImageChosen && !authenticated) {
           authImageChosen = 'a';
           document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
-          document.getElementById('img-auth-b').style.border = '0px solid #000000';
+          document.getElementById('img-auth-b').style.border = '4px solid #FFFFFF';
           document.getElementById('authenticate').disabled = false;
         }
       });
@@ -647,7 +670,7 @@
       document.getElementById('img-auth-b').addEventListener('click', function(event) {
         if (regImageChosen && !authenticated) {
           authImageChosen = 'b';
-          document.getElementById('img-auth-a').style.border = '0px solid #000000';
+          document.getElementById('img-auth-a').style.border = '4px solid #FFFFFF';
           document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
           document.getElementById('authenticate').disabled = false;
         }
@@ -658,7 +681,7 @@
         document.getElementById("imageUploader").disabled = true;
         document.getElementById("imageUploaderLabel").style.backgroundColor = "#CCCCCC";
         document.getElementById("imageUploaderLabel").style.color = "#777777";
-        document.getElementById("imageUploaderLabel").style.cursor = "auto";
+        document.getElementById("imageUploaderLabel").style.cursor = "default";
         document.getElementById("img-reg").style.cursor = "auto";
         document.getElementById("img-reg").style.border = "4px solid #999999";
         connectorsRegister();
@@ -670,8 +693,9 @@
           document.getElementById(elementId).style.opacity = 1;
         });
 
-        document.getElementById("img-example-a").classList.add("clickable");
-        document.getElementById("img-example-b").classList.add("clickable");
+        document.getElementById("img-reg").classList.remove("clickable");
+        document.getElementById("img-auth-a").classList.add("clickable");
+        document.getElementById("img-auth-b").classList.add("clickable");
       }
 
       function maskAndAuthenticate(value) {
