@@ -1,6 +1,6 @@
 [project]
 name = "tinybio"
-version = "0.0.0"
+version = "0.1.0"
 description = """\
     Minimal pure-Python library that implements a basic version of a \
     secure decentralized biometric authentication functionality via \
