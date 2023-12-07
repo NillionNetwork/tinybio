@@ -442,17 +442,17 @@
       </div>
     </footer>
     <py-config>
-      packages = ["tinynmc"]
+      packages = ["tinybio"]
     </py-config>
     <section class="pyscript">
-      <py-script src="https://raw.githubusercontent.com/nillion-oss/tinybio/main/src/tinybio/tinybio.py"></py-script>
       <py-script>
         from typing import Sequence, Iterable
         import math
         from pyodide.ffi import create_proxy
         import js
+        from tinybio import *
 
-        token_registration = {} # Global.
+        reg_token = {} # Global.
 
         def show_cutoff(s):
             _limit = 30
@@ -470,10 +470,10 @@
             element = js.document.getElementById(element_id)
             element.innerHTML = show_cutoff(str(int(data)))
 
-        def compute_and_reveal(nodes, broadcast):
+        def compute_and_reveal(nodes, reg_token, auth_token):
             shares = []
             for (name, node) in zip(['one', 'two', 'three'], nodes):
-                result_share = node.authenticate(broadcast)
+                result_share = node.authenticate(reg_token, auth_token)
                 shares.append(result_share)
                 show_computation(result_share, 'node-' + name)
 
@@ -486,23 +486,23 @@
                 'Euclidean distance between descriptors: ' + str(result)[:7] + '.'
 
         def mask_and_register(_):
-            global token_registration
+            global reg_token
             js.maskAndRegister()
             descriptor = list(js.getRegisterInput())
-            masks = [node.masks(registration_request(descriptor)) for node in nodes]
-            token_registration = registration_token(masks, descriptor)
-            show_contribution(token_registration, 'auth_obama_register')
+            masks = [node.masks(request.registration(descriptor)) for node in nodes]
+            reg_token = token.registration(masks, descriptor)
+            show_contribution(reg_token, 'auth_obama_register')
 
         def mask_and_authenticate(_):
             js.maskAndAuthenticate()
             descriptor = list(js.getLoginUser())
-            masks = [node.masks(authentication_request(descriptor)) for node in nodes]
-            token_authentication = authentication_token(masks, descriptor)
-            show_contribution(token_authentication, 'auth_login')
-            compute_and_reveal(nodes, [token_registration, token_authentication])
+            masks = [node.masks(request.authentication(descriptor)) for node in nodes]
+            auth_token = token.authentication(masks, descriptor)
+            show_contribution(auth_token, 'auth_login')
+            compute_and_reveal(nodes, reg_token, auth_token)
 
         nodes = [node(), node(), node()]
-        preprocess(136, nodes)
+        preprocess(nodes, length=136)
         js.document.getElementById('register').addEventListener('click', create_proxy(mask_and_register))
         js.document.getElementById('authenticate').addEventListener('click', create_proxy(mask_and_authenticate))
       </py-script>
