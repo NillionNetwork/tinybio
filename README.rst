@@ -4,7 +4,7 @@ tinybio
 
 Minimal pure-Python library that implements a basic version of a `secure decentralized biometric authentication <https://nillion.pub/decentralized-multifactor-authentication.pdf>`__ functionality via a `secure multi-party computation protocol <https://eprint.iacr.org/2023/1740>`__.
 
-|pypi| |readthedocs| |actions|
+|pypi| |readthedocs| |actions| |coveralls|
 
 .. |pypi| image:: https://badge.fury.io/py/tinybio.svg
    :target: https://badge.fury.io/py/tinybio
@@ -47,35 +47,41 @@ Suppose that a workflows is supported by three nodes (parties performing the dec
 
     >>> nodes = [node(), node(), node()]
 
-The preprocessing phase that the nodes must execute can be simulated:
+The preprocessing phase that the nodes must execute can be simulated. The second parameter specifies the length of a biometric descriptor (*i.e.*, list of floating point values):
 
 .. code-block:: python
     
-    >>> preprocess(nodes, 3)
+    >>> preprocess(nodes, length=4)
 
-It is then possible to register some data (such as a biometric descriptor represented as a vector of floating point values) by requesting the masks from each node and submitting a registration *token* (*i.e.*, a masked descriptor that is computed locally by the registering party) to the nodes:
+.. |token| replace:: ``token``
+.. _token: https://tinybio.readthedocs.io/en/0.1.0/_source/tinybio.html#tinybio.tinybio.token
+
+.. |float| replace:: ``float``
+.. _float: https://docs.python.org/3/library/functions.html#float
+
+Suppose the client has a biometric descriptor represented as a vector of |float|_ values. The client can create a request for masks and then obtain masks from each node. The client can then locally generate a registration |token|_ (*i.e.*, a masked descriptor that is computed locally by the registering party):
 
 .. code-block:: python
 
-    >>> reg_descriptor = [0.5, 0.3, 0.7]
+    >>> reg_descriptor = [0.5, 0.3, 0.7, 0.1]
     >>> reg_masks = [node.masks(request.registration(reg_descriptor)) for node in nodes]
     >>> reg_token = token.registration(reg_masks, reg_descriptor)
 
-At a later point, it is possible to perform an authentication workflow. After requesting masks for the authentication descriptor, the authentication token (*i.e.*, a masked descriptor) can be generated locally by the party interested in authenticating itself:
+At a later point, the client can perform an authentication workflow. After requesting masks for the authentication descriptor in a manner similar to the above, the client can generate an authentication |token|_ (*i.e.*, a masked descriptor) locally:
 
 .. code-block:: python
 
-    >>> auth_descriptor = [0.1, 0.4, 0.8]
+    >>> auth_descriptor = [0.1, 0.4, 0.8, 0.2]
     >>> auth_masks = [node.masks(request.authentication(auth_descriptor)) for node in nodes]
     >>> auth_token = token.authentication(auth_masks, auth_descriptor)
 
-Finally, the party interested in authenticating itself can broadcast its original registration token together with its authentication token. Each node then computes locally its share of the authentication result. These shares can be reconstructed by a designated authority to obtain a result:
+Finally, the party interested in authenticating itself can broadcast its original registration token together with its authentication token. Each node can then compute locally its share of the authentication result. These shares can be reconstructed by the validating party to obtain the result (*i.e.*, the Euclidean distance between the registration and authentication descriptors):
 
 .. code-block:: python
 
-    >>> shares = [node.authenticate([reg_token, auth_token]) for node in nodes]
+    >>> shares = [node.authenticate(reg_token, auth_token) for node in nodes]
     >>> reveal(shares) # Floating point results may differ slightly.
-    0.42261581368491463
+    0.43375208257785347
 
 Development
 -----------
