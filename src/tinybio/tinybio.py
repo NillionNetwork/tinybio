@@ -98,7 +98,17 @@ class node(tinynmc.node):
     between the registration and authentication descriptors.
 
     >>> shares = [node.authenticate(reg_token, auth_token) for node in nodes]
-    >>> abs(reveal(shares) - 0.43) <= 0.05 # Use comparison for floating point value.
+    >>> result = reveal(shares)
+
+    The tests below confirm that the computed result is indeed the Euclidean
+    distance.
+
+    >>> abs(result - 0.43) <= 0.05 # Use comparison for floating point value.
+    True
+    >>> abs(result - math.sqrt(sum(
+    ...     (x - y) ** 2 
+    ...     for (x, y) in zip(reg_descriptor, auth_descriptor)
+    ... ))) <= 0.05
     True
     """
     def authenticate(

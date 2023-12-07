@@ -83,6 +83,14 @@ Finally, the party interested in authenticating itself can broadcast its origina
     >>> reveal(shares) # Floating point results may differ slightly.
     0.43375208257785347
 
+The above result can be compared to that of a calculation that uses the original descriptors. The results are exactly equivalent due to the conversion from floating point values to a fixed-point representation during masking:
+
+.. code-block:: python
+
+    >>> import math
+    >>> math.sqrt(sum([(x - y)**2 for (x, y) in zip(reg_descriptor, auth_descriptor)]))
+    0.43378989435406744
+
 Development
 -----------
 All installation and development dependencies are fully specified in ``pyproject.toml``. The ``project.optional-dependencies`` object is used to `specify optional requirements <https://peps.python.org/pep-0621>`__ for various development tasks. This makes it possible to specify additional options (such as ``docs``, ``lint``, and so on) when performing installation using `pip <https://pypi.org/project/pip>`__:
