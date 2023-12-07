@@ -4,7 +4,7 @@ secure decentralized biometric authentication functionality via
 a secure multi-party computation protocol.
 """
 from __future__ import annotations
-from typing import Sequence, Iterable
+from typing import Dict, List, Tuple, Sequence, Iterable
 import doctest
 import math
 from modulo import modulo
@@ -19,7 +19,7 @@ representation of a value) for fixed-point rationals.
 def _encode(
         descriptor: Sequence[float],
         for_auth: bool = False
-    ) -> dict[tuple[int, int], int]:
+    ) -> Dict[Tuple[int, int], int]:
     """
     Encode data for requests to nodes.
     """
@@ -119,7 +119,7 @@ class node(tinynmc.node):
             [registration_token, authentication_token]
         )
 
-class request(list[tuple[int, int]]):
+class request(List[Tuple[int, int]]):
     """
     Data structure for representing registration and authentication requests.
     """
@@ -155,13 +155,13 @@ class request(list[tuple[int, int]]):
         """
         return request(_encode(descriptor, True).keys())
 
-class token(dict[tuple[int, int], modulo]):
+class token(Dict[Tuple[int, int], modulo]):
     """
     Data structure for representing registration and authentication tokens.
     """
     @staticmethod
     def registration(
-            masks: Iterable[dict[tuple[int, int], modulo]],
+            masks: Iterable[Dict[Tuple[int, int], modulo]],
             descriptor: Sequence[float]
         ) -> token:
         """
@@ -188,7 +188,7 @@ class token(dict[tuple[int, int], modulo]):
 
     @staticmethod
     def authentication(
-            masks: Iterable[dict[tuple[int, int], modulo]],
+            masks: Iterable[Dict[Tuple[int, int], modulo]],
             descriptor: Sequence[float]
         ) -> token:
         """
