@@ -199,6 +199,9 @@
         }
         h3 { font-size:14px; }
         .box-title { font-size:12px; }
+        .node-reg-title { line-height:8px !important; font-size:6px; }
+        .node-auth-title { line-height:8px !important; font-size:6px; }
+        .raw { line-height:10px !important; font-size:8px; }
         .file-choose { font-size:14px; }
         button { font-size:14px; }
         #result-bar { line-height:28px; font-size:24px; }
@@ -208,7 +211,10 @@
         #license-phrase { /* display:none; */ }
       }
       @media all and (max-width:575px) {
-        .client > .row > .col { /* flex:0 0 auto !important; */ }
+        .selector-image { min-height:160px; }
+        .file-choose { line-height:12px !important; font-size:10px; }
+        button { line-height:12px !important; font-size:10px; }
+        #result-bar { margin-bottom:20px; line-height:22px; font-size:18px; }
       }
       @media all and (max-width:400px) {
         .card { min-width:250px !important; }
@@ -431,10 +437,14 @@
         <div class="grid-col">
           <div class="content" id="panel-output" style="opacity:0.2;">
             <div class="entity">
-              <h3>Network Output</h3>
-              <div class="row row-cols-1">
-                <div class="col-xs-6">
-                  <div id="result-bar"></div>
+              <div style="display:table; height:100%; width:100%;">
+                <div style="display:table-row;">
+                  <h3>Network Output</h3>
+                </div>
+                <div style="display:table-row;">
+                  <div style="display:table-cell; width:100%; vertical-align:middle;">
+                    <div id="result-bar"></div>
+                  </div>
                 </div>
               </div>
             </div>
