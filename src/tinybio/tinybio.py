@@ -6,10 +6,11 @@ a secure multi-party computation protocol.
 from __future__ import annotations
 from typing import Sequence, Iterable
 import doctest
+import math
 from modulo import modulo
 import tinynmc
 
-_PRECISION = 16
+_PRECISION = 8
 """
 Precision (*i.e.*, number of digits after the decimal point in a binary
 representation of a value) for fixed-point rationals.
@@ -17,17 +18,20 @@ representation of a value) for fixed-point rationals.
 
 def _encode(
         descriptor: Sequence[float],
-        authentication: bool = False
+        for_auth: bool = False
     ) -> dict[tuple[int, int], int]:
     """
     Encode data for requests to nodes.
     """
-    authentication = int(authentication)
+    reg_0_or_auth_1 = int(for_auth)
     encoding = [round(value * (2 ** _PRECISION)) for value in descriptor]
 
-    coords_to_values = {(authentication, 0): sum(value * value for value in encoding)}
+    coords_to_values = {
+        (reg_0_or_auth_1, 0): \
+            sum(value ** 2 for value in encoding)
+    }
     for (index, value) in enumerate(encoding, 2):
-        coords_to_values[(index, authentication)] = ((authentication * 3) - 2) * value
+        coords_to_values[(index, reg_0_or_auth_1)] = (-2 if for_auth else 1) * value
 
     return coords_to_values
 
@@ -43,11 +47,15 @@ class node(tinynmc.node):
     >>> nodes = [node(), node(), node()]
 
     The preprocessing phase that the nodes must execute can be simulated using
-    the :obj:`preprocess` function.
-    
-    >>> preprocess(3, nodes)
+    the :obj:`preprocess` function. It is assumed that biometric descriptors
+    used for registration and authentication are represented as lists of
+    floating point numbers. All such descriptors must be of the same length,
+    and this length must be supplied as the second argument to the
+    :obj:`preprocess` function.
 
-    It is then possible to register some data (such as a biometric descriptor
+    >>> preprocess(nodes, 3)
+
+    It is then possible to register some data (*i.e.*, a biometric descriptor
     represented as a vector of floating point values) by requesting the masks
     from each node and submitting a registration *token* (*i.e.*, a masked
     descriptor that is computed locally by the registering party) to the nodes.
@@ -71,8 +79,8 @@ class node(tinynmc.node):
     shares can be reconstructed by a designated authority to obtain a result.
 
     >>> shares = [node.authenticate([reg_token, auth_token]) for node in nodes]
-    >>> round(1000 * reveal(shares)) # Rounded floating point value to keep test stable.
-    180
+    >>> abs(reveal(shares) - 0.42) <= 0.1 # Use comparison for floating point value.
+    True
     """
     def authenticate(
             self: node,
@@ -83,7 +91,7 @@ class node(tinynmc.node):
         """
         return self.compute(getattr(self, '_signature'), tokens)
 
-def preprocess(length: int, nodes: Sequence[node]):
+def preprocess(nodes: Sequence[node], length: int):
     """
     Simulate a preprocessing phase among the collection of nodes for a workflow
     that supports registration and authentication descriptor vectors of the
@@ -129,7 +137,7 @@ def reveal(shares: Iterable[modulo]) -> float:
     Reconstruct the result of the overall workflow from its shares and convert
     it into a meaningful output (as a percentage).
     """
-    return int(sum(shares)) / (2 ** (2 * _PRECISION))
+    return math.sqrt(int(sum(shares)) / (2 ** (2 * _PRECISION)))
 
 if __name__ == '__main__':
     doctest.testmod() # pragma: no cover

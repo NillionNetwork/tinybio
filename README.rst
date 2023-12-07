@@ -74,8 +74,8 @@ Finally, the party interested in authenticating itself can broadcast its origina
 .. code-block:: python
 
     >>> shares = [node.authenticate([reg_token, auth_token]) for node in nodes]
-    >>> round(1000 * reveal(shares)) # Rounded floating point value to keep test stable.
-    180
+    >>> reveal(shares) # Floating point results may differ slightly.
+    0.42261581368491463
 
 Development
 -----------
