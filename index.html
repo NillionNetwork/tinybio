@@ -57,6 +57,8 @@
       .node { height:100%; }
       .node > h3 { background-color:#00003F; color:#FFFFFF; }
       .node > .entity { border-top:1px solid #FFFFFF; background-color:#00003F; color:#FFFFFF; }
+      .node-reg-title { display:none; }
+      .node-auth-title { display:none; }
       .activated > h3 { background-color:#000000; color:#FFFFFF; }
       .activated > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
       img { width:100%; border:1px solid #FFFFFF; }
@@ -237,7 +239,7 @@
               <ol start="1">
                 <li>
                   <div>
-                    During both registration and authentication, the selected image is encoded as a descriptor (<i>i.e.</i>, a vector numeric values), masks are requested from the nodes, and secret shares of the masked image are broadcast to all the nodes.
+                    During both registration and authentication, the selected image is encoded as a <i>descriptor</i> (<i>i.e.</i>, a vector numeric values), masks are requested from the nodes, and the masked descriptor (or <i><a href="https://tinybio.readthedocs.io/en/0.1.0/_source/tinybio.html#tinybio.tinybio.token">token</a></i>) is broadcast to all the nodes.
                   </div>
                 </li>
               </ol>
@@ -350,7 +352,7 @@
             <ol start="2">
               <li>
                 <div>
-                  Each node receives secret shares of the descriptor vectors corresponding the two images, and then locally computes its secret share of the overall Euclidean distance between the two vectors.
+                  Each node receives the masked descriptor vectors corresponding the two images, and then locally computes its secret share of the overall Euclidean distance between the two vectors.
                 </div>
               </li>
             </ol>
@@ -361,7 +363,14 @@
             <div class="entity">
               <h3>Node 1</h3>
               <div class="row row-cols-1">
-                <div class="col-xs-6"><div class="raw" id="node-one"></div></div>
+                <div class="col-xs-6" style="text-align:center;">
+                  <div class="box-title noselect node-reg-title">Registration Token</div>
+                  <canvas id="node-one-reg-token" style="width:100%; height:50px;"></canvas>
+                  <div class="box-title noselect node-auth-title">Authentication Token</div>
+                  <canvas id="node-one-auth-token" style="width:100%; height:50px;"></canvas>
+                  <div class="box-title noselect node-auth-title">Secret Share of Result</div>
+                  <div class="raw" id="node-one"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -371,7 +380,14 @@
             <div class="entity">
               <h3>Node 2</h3>
               <div class="row row-cols-1">
-                <div class="col-xs-6"><div class="raw" id="node-two"></div></div>
+                <div class="col-xs-6">
+                  <div class="box-title noselect node-reg-title">Registration Token</div>
+                  <canvas id="node-two-reg-token" style="width:100%; height:50px;"></canvas>
+                  <div class="box-title noselect node-auth-title">Authentication Token</div>
+                  <canvas id="node-two-auth-token" style="width:100%; height:50px;"></canvas>
+                  <div class="box-title noselect node-auth-title">Secret Share of Result</div>
+                  <div class="raw" id="node-two"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -381,7 +397,14 @@
             <div class="entity">
               <h3>Node 3</h3>
               <div class="row row-cols-1">
-                <div class="col-xs-6"><div class="raw" id="node-three"></div></div>
+                <div class="col-xs-6">
+                  <div class="box-title noselect node-reg-title">Registration Token</div>
+                  <canvas id="node-three-reg-token" style="width:100%; height:50px;"></canvas>
+                  <div class="box-title noselect node-auth-title">Authentication Token</div>
+                  <canvas id="node-three-auth-token" style="width:100%; height:50px;"></canvas>
+                  <div class="box-title noselect node-auth-title">Secret Share of Result</div>
+                  <div class="raw" id="node-three"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -399,7 +422,7 @@
             <ol start="3">
               <li>
                 <div>
-                  A designated third party receives a secret shares of the result from each node and reconstructs the overall output.
+                  The validating party receives the secret shares of the result from each node and reconstructs the overall output.
                 </div>
               </li>
             </ol>
@@ -452,22 +475,27 @@
         from tinybio import *
 
         reg_token = {} # Global.
+        broadcast = None
 
-        def show_cutoff(s):
-            _limit = 14
+        def show_cutoff(s, _limit=14):
             return s[:(_limit - 3)] + '...' if len(s) > _limit else s
 
-        def show_contribution(data, element_id):
+        def show_contribution(data, element_id, reg_or_auth):
             lines = []
-            for (k, v) in list(data.items())[:9]:
+            for (_, v) in list(data.items())[:9]:
                 lines.append(show_cutoff(str(int(v))))
 
             element = js.document.getElementById(element_id)
             element.innerHTML = '<div>' + ('<br/>'.join(lines + ['...'])) + '</div>'
+            
+            global broadcast
+            broadcast = [((256 * int(v)) // v.modulus) for (_, v) in data.items()]
+            js.showToken(reg_or_auth)
 
         def show_computation(data, element_id):
             element = js.document.getElementById(element_id)
-            element.innerHTML = show_cutoff(str(int(data)))
+            share = str(int(data))
+            element.innerHTML = show_cutoff(share, len(share))
 
         def compute_and_reveal(nodes, reg_token, auth_token):
             shares = []
@@ -490,14 +518,14 @@
             descriptor = list(js.getRegistrationDescriptor())
             masks = [node.masks(request.registration(descriptor)) for node in nodes]
             reg_token = token.registration(masks, descriptor)
-            show_contribution(reg_token, 'auth_obama_register')
+            show_contribution(reg_token, 'auth_obama_register', 'reg')
 
         def mask_and_authenticate(_):
             js.maskAndAuthenticate()
             descriptor = list(js.getAuthenticationDescriptor())
             masks = [node.masks(request.authentication(descriptor)) for node in nodes]
             auth_token = token.authentication(masks, descriptor)
-            show_contribution(auth_token, 'auth_login')
+            show_contribution(auth_token, 'auth_login', 'auth')
             compute_and_reveal(nodes, reg_token, auth_token)
 
         nodes = [node(), node(), node()]
@@ -705,6 +733,32 @@
         ].map(function(elementId) {
           document.getElementById(elementId).style.opacity = 1;
         });
+      }
+
+      function showTokenAtNode(nodeName, regOrAuth) {
+        let share = Array.from(pyscript.interpreter.globals.get("broadcast"));
+        let canvas = document.getElementById("node-" + nodeName + "-" + regOrAuth + "-token");
+        let context = canvas.getContext("2d");
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        let w = canvas.width, h = canvas.height;
+        let pixelWidth = (h / 8) * 2.7 * (1.6 * canvas.width / 242), pixelHeight = 6;
+        for (let i = 0; i < share.length; i++) {
+          context.fillStyle = "rgba(255, 255, 255, " + (share[i] / 256) + ")";
+          context.fillRect(
+            Math.round(i / 16) * pixelWidth,
+            (i % 8) * pixelHeight,
+            pixelWidth,
+            pixelHeight
+          );
+        }
+      }
+
+      function showToken(regOrAuth) {
+        $(".node-" + regOrAuth + "-title").show();
+        showTokenAtNode("one", regOrAuth);
+        showTokenAtNode("two", regOrAuth);
+        showTokenAtNode("three", regOrAuth);
       }
 
       async function initialize() {
