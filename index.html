@@ -181,7 +181,9 @@
                                        supported by Chrome, Edge, Opera and Firefox */
       }
       #imageUploader {max-width: 100%;}
-      @media all and (max-width:901px) { }
+      @media all and (max-width:991px) {
+        .selector-image { min-height:220px; }
+      }
       @media all and (max-width:767px) {
         .entity { padding:10px; }
         .content { padding:0px; }
@@ -195,6 +197,8 @@
         }
         h3 { font-size:14px; }
         .box-title { font-size:12px; }
+        .file-choose { font-size:14px; }
+        button { font-size:14px; }
         #result-bar { line-height:28px; font-size:24px; }
       }
       @media all and (max-width:618px) {
@@ -219,7 +223,7 @@
             <hr/>
             <h2>
               This <a href="https://nillion.pub/decentralized-multifactor-authentication.pdf">biometric authentication</a> demo simulates a secure multi-party computation (MPC) network <b>in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinybio">tinybio</a> and underlying <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> libraries using <a href="https://pyscript.net">PyScript</a>.
-              The <a href="https://justadudewhohacks.github.io/face-api.js/docs/index.html">face-api.js</a> library is used to generate descriptors.
+              The <a href="https://justadudewhohacks.github.io/face-api.js/docs/index.html">face-api.js</a> library is used for face detection and to generate descriptors.
             </h2>
           </div>
         </div>
@@ -243,7 +247,7 @@
         <div class="grid-col">
           <div class="content">
             <div class="entity client">
-              <div style="display:table; height:100%;">
+              <div style="display:table; height:100%; width:100%;">
                 <div style="display:table-row;">
                   <h3>Registration</h3>
                 </div>
@@ -251,8 +255,8 @@
                   <div style="display:table-cell; vertical-align:top;">
                     <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
                       <div class="col-md">
-                        <div class="box-title">Image</div>
-                        <div>
+                        <div class="box-title noselect">Image</div>
+                        <div class="selector-image">
                           <div class="data-box" style="margin-bottom:6px;">
                             <img id="img-reg" class="clickable" src="reg-obama.png" />
                           </div>
@@ -263,9 +267,9 @@
                         </div>
                       </div>
                       <div class="col-md">
-                        <div class="box-title">Descriptor</div>
+                        <div class="box-title noselect">Descriptor</div>
                         <div class="data-box" style="aspect-ratio:1;">
-                          <div class="raw" id="auth_obama_register">Please select an image on the left</div>
+                          <div class="raw noselect" id="auth_obama_register">Please select an image on the left</div>
                         </div>
                       </div>
                     </div>
@@ -295,8 +299,8 @@
                   <div style="display:table-cell; vertical-align:top;">
                     <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
                       <div class="col-md">
-                        <div class="box-title">Image</div>
-                        <div>
+                        <div class="box-title noselect">Image</div>
+                        <div class="selector-image">
                           <div class="row">
                             <div class="col" style="padding-right:4px;">
                               <div class="data-box">
@@ -312,9 +316,9 @@
                         </div>
                       </div>
                       <div class="col-md">
-                        <div class="box-title">Descriptor</div>
+                        <div class="box-title noselect">Descriptor</div>
                         <div class="data-box" style="aspect-ratio:1;">
-                          <div class="raw" id="auth_login">Please select an image on the left</div>
+                          <div class="raw noselect" id="auth_login">Please select an image on the left</div>
                         </div>
                       </div>
                     </div>
@@ -483,21 +487,21 @@
         def mask_and_register(_):
             global reg_token
             js.maskAndRegister()
-            descriptor = list(js.getRegisterInput())
+            descriptor = list(js.getRegistrationDescriptor())
             masks = [node.masks(request.registration(descriptor)) for node in nodes]
             reg_token = token.registration(masks, descriptor)
             show_contribution(reg_token, 'auth_obama_register')
 
         def mask_and_authenticate(_):
             js.maskAndAuthenticate()
-            descriptor = list(js.getLoginUser())
+            descriptor = list(js.getAuthenticationDescriptor())
             masks = [node.masks(request.authentication(descriptor)) for node in nodes]
             auth_token = token.authentication(masks, descriptor)
             show_contribution(auth_token, 'auth_login')
             compute_and_reveal(nodes, reg_token, auth_token)
 
         nodes = [node(), node(), node()]
-        preprocess(nodes, length=136)
+        preprocess(nodes, length=128)
         js.document.getElementById('register').addEventListener('click', create_proxy(mask_and_register))
         js.document.getElementById('authenticate').addEventListener('click', create_proxy(mask_and_authenticate))
       </py-script>
@@ -511,19 +515,24 @@
     </script>
     <script src="face-api.js"></script>
     <script>
-      var registerInputValue;
-      var loginUserAValue;
-      var loginUserBValue;
-      var regImageChosen = false;
-      var authImageChosen = null;
-      var authenticated = false;
+      let registrationDescriptorForPython;
+      let authenticationDescriptorOneForPython;
+      let authenticationDescriptorTwoForPython;
+      let regImageChosen = false;
+      let registered = false;
+      let authImageChosen = null;
+      let authenticated = false;
 
-      function getRegisterInput() {
-        return registerInputValue;
+      function getRegistrationDescriptor() {
+        return registrationDescriptorForPython;
       }
 
-      function getLoginUser() {
-        return (authImageChosen == "a") ? loginUserAValue : loginUserBValue;
+      function getAuthenticationDescriptor() {
+        return (
+          (authImageChosen == "a") 
+          ? authenticationDescriptorOneForPython
+          : authenticationDescriptorTwoForPython
+        );
       }
 
       const canvas_register_and_login = document.getElementById("canvas-register-and-login");
@@ -578,31 +587,31 @@
         }
       }
 
-      async function processImage(imgElement) {
+      const renderFace = async (image, x, y, width, height) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+
+        context.drawImage(image, x, y, width, height, 0, 0, width, height);
+        canvas.toBlob((blob) => { image.src = URL.createObjectURL(blob); }, "image/jpeg");
+      };
+
+      async function extractDescriptor(imgElement, render) {
         const detection = await
           faceapi.detectSingleFace(
             imgElement,
             new faceapi.TinyFaceDetectorOptions()
           )
           .withFaceLandmarks()
-          .withFaceExpressions();
+          .withFaceDescriptor();
+
+        if (detection && render) {
+          const { x, y, width, height } = detection.detection.box;
+          renderFace(imgElement, x, y, width, height);
+        }
 
         return detection;
-      }
-
-      function normalizeDetectedImageCoords(processedImg) {
-        const faceDetectionBox = processedImg.detection._box;
-        const boundingBoxX = faceDetectionBox._x;
-        const boundingBoxY = faceDetectionBox._y;
-        const boundingBoxWidth = faceDetectionBox._width;
-        const boundingBoxHeight = faceDetectionBox._height;
-
-        const normalizedCoords = processedImg.landmarks._positions.map(point => {
-          const normalizedX = (point._x - boundingBoxX) / boundingBoxWidth;
-          let normalizedY = (point._y - boundingBoxY) / boundingBoxHeight;
-          return [normalizedX, normalizedY];
-        });
-        return normalizedCoords.flat();
       }
 
       // Handle image from image selector.
@@ -618,12 +627,10 @@
             img.onload = () => URL.revokeObjectURL(img.src);  // Free memory
             img.style.display = 'block';
 
-            // Process the uploaded image with faceapi, then normalize image coordinates
-            processImage(img).then((processedImg)=> {
-              const normalized = normalizeDetectedImageCoords(processedImg);
-              
-              // set global variable to pass input value to pyscript
-              registerInputValue = normalized;
+            // Process the chosen image with face-api.js and make the output available
+            // to the Python component.
+            extractDescriptor(img, true).then((detection) => {
+              registrationDescriptorForPython = detection.descriptor;
             });
 
             regImageChosen = true;
@@ -644,7 +651,7 @@
       });
 
       document.getElementById('img-auth-a').addEventListener('click', function(event) {
-        if (regImageChosen && !authenticated) {
+        if (registered && !authenticated) {
           authImageChosen = 'a';
           document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
           document.getElementById('img-auth-b').style.border = '4px solid #FFFFFF';
@@ -653,7 +660,7 @@
       });
 
       document.getElementById('img-auth-b').addEventListener('click', function(event) {
-        if (regImageChosen && !authenticated) {
+        if (registered && !authenticated) {
           authImageChosen = 'b';
           document.getElementById('img-auth-a').style.border = '4px solid #FFFFFF';
           document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
@@ -678,6 +685,7 @@
           document.getElementById(elementId).style.opacity = 1;
         });
 
+        registered = true;
         document.getElementById("img-reg").classList.remove("clickable");
         document.getElementById("img-auth-a").classList.add("clickable");
         document.getElementById("img-auth-b").classList.add("clickable");
@@ -708,23 +716,20 @@
 
         // Process registration example image.
         var img = document.getElementById("img-reg");
-        processImage(img).then((processedImg) => {
-          const normalized = normalizeDetectedImageCoords(processedImg);
-          registerInputValue = normalized;
+        extractDescriptor(img, true).then((processedImg) => {
+          registrationDescriptorForPython = processedImg.descriptor;
         });
 
         // Process first authentication example image.
         var userA = document.getElementById("img-auth-a");
-        processImage(userA).then((processedImg)=> {
-          const normalized = normalizeDetectedImageCoords(processedImg);
-          loginUserAValue = normalized;
+        extractDescriptor(userA).then((processedImg) => {
+          authenticationDescriptorOneForPython = processedImg.descriptor;
         });
 
         // Process second authentication example image.
         var userB = document.getElementById("img-auth-b");
-        processImage(userB).then((processedImg)=> {
-          const normalized = normalizeDetectedImageCoords(processedImg);
-          loginUserBValue = normalized;
+        extractDescriptor(userB).then((processedImg) => {
+          authenticationDescriptorTwoForPython = processedImg.descriptor;
         });
       }
       
