@@ -743,8 +743,9 @@
         canvas.height = canvas.offsetHeight;
         let w = canvas.width, h = canvas.height;
         let pixelWidth = (h / 8) * 2.7 * (1.6 * canvas.width / 242), pixelHeight = 6;
+        let opacity = (regOrAuth == 'reg') ? 1 : 0.4;
         for (let i = 0; i < share.length; i++) {
-          context.fillStyle = "rgba(255, 255, 255, " + (share[i] / 256) + ")";
+          context.fillStyle = "rgba(255, 255, 255, " + (opacity * (share[i] / 256)) + ")";
           context.fillRect(
             Math.round(i / 16) * pixelWidth,
             (i % 8) * pixelHeight,
