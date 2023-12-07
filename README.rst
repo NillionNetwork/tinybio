@@ -51,23 +51,23 @@ The preprocessing phase that the nodes must execute can be simulated:
 
 .. code-block:: python
     
-    >>> preprocess(3, nodes)
+    >>> preprocess(nodes, 3)
 
 It is then possible to register some data (such as a biometric descriptor represented as a vector of floating point values) by requesting the masks from each node and submitting a registration *token* (*i.e.*, a masked descriptor that is computed locally by the registering party) to the nodes:
 
 .. code-block:: python
 
     >>> reg_descriptor = [0.5, 0.3, 0.7]
-    >>> reg_masks = [node.masks(registration_request(reg_descriptor)) for node in nodes]
-    >>> reg_token = registration_token(reg_masks, reg_descriptor)
+    >>> reg_masks = [node.masks(request.registration(reg_descriptor)) for node in nodes]
+    >>> reg_token = token.registration(reg_masks, reg_descriptor)
 
 At a later point, it is possible to perform an authentication workflow. After requesting masks for the authentication descriptor, the authentication token (*i.e.*, a masked descriptor) can be generated locally by the party interested in authenticating itself:
 
 .. code-block:: python
 
     >>> auth_descriptor = [0.1, 0.4, 0.8]
-    >>> auth_masks = [node.masks(authentication_request(auth_descriptor)) for node in nodes]
-    >>> auth_token = authentication_token(auth_masks, auth_descriptor)
+    >>> auth_masks = [node.masks(request.authentication(auth_descriptor)) for node in nodes]
+    >>> auth_token = token.authentication(auth_masks, auth_descriptor)
 
 Finally, the party interested in authenticating itself can broadcast its original registration token together with its authentication token. Each node then computes locally its share of the authentication result. These shares can be reconstructed by a designated authority to obtain a result:
 

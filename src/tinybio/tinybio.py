@@ -61,8 +61,8 @@ class node(tinynmc.node):
     descriptor that is computed locally by the registering party) to the nodes.
 
     >>> reg_descriptor = [0.5, 0.3, 0.7]
-    >>> reg_masks = [node.masks(registration_request(reg_descriptor)) for node in nodes]
-    >>> reg_token = registration_token(reg_masks, reg_descriptor)
+    >>> reg_masks = [node.masks(request.registration(reg_descriptor)) for node in nodes]
+    >>> reg_token = token.registration(reg_masks, reg_descriptor)
 
     At a later point, it is possible to perform an authentication workflow.
     After requesting masks for the authentication descriptor, the authentication
@@ -70,8 +70,8 @@ class node(tinynmc.node):
     interested in authenticating itself.
 
     >>> auth_descriptor = [0.1, 0.4, 0.8]
-    >>> auth_masks = [node.masks(authentication_request(auth_descriptor)) for node in nodes]
-    >>> auth_token = authentication_token(auth_masks, auth_descriptor)
+    >>> auth_masks = [node.masks(request.authentication(auth_descriptor)) for node in nodes]
+    >>> auth_token = token.authentication(auth_masks, auth_descriptor)
 
     Finally, the party interested in authenticating itself can broadcast its
     original registration token together with its authentication token. Each
@@ -91,6 +91,48 @@ class node(tinynmc.node):
         """
         return self.compute(getattr(self, '_signature'), tokens)
 
+class request(list[tuple[int, int]]):
+    """
+    Data structure for representing registration and authentication requests.
+    """
+    @staticmethod
+    def registration(descriptor: Sequence[float]) -> request:
+        """
+        Encode descriptor into a registration request.
+        """
+        return request(_encode(descriptor, False).keys())
+
+    @staticmethod
+    def authentication(descriptor: Sequence[float]) -> request:
+        """
+        Encode descriptor into an authentication request.
+        """
+        return request(_encode(descriptor, True).keys())
+
+class token(dict[tuple[int, int], modulo]):
+    """
+    Data structure for representing registration and authentication tokens.
+    """
+    @staticmethod
+    def registration(
+            masks: Iterable[dict[tuple[int, int], modulo]],
+            descriptor: Sequence[float]
+        ) -> token:
+        """
+        Mask descriptor and create a registration token.
+        """
+        return token(tinynmc.masked_factors(_encode(descriptor, False), masks))
+
+    @staticmethod
+    def authentication(
+            masks: Iterable[dict[tuple[int, int], modulo]],
+            descriptor: Sequence[float]
+        ) -> token:
+        """
+        Mask descriptor and create an authentication token.
+        """
+        return token(tinynmc.masked_factors(_encode(descriptor, True), masks))
+
 def preprocess(nodes: Sequence[node], length: int):
     """
     Simulate a preprocessing phase among the collection of nodes for a workflow
@@ -101,36 +143,6 @@ def preprocess(nodes: Sequence[node], length: int):
     tinynmc.preprocess(signature, nodes)
     for node_ in nodes:
         setattr(node_, '_signature', signature)
-
-def registration_request(descriptor: Sequence[float]) -> Iterable[tuple[int, int]]:
-    """
-    Encode descriptor into a registration request.
-    """
-    return _encode(descriptor, False).keys()
-
-def authentication_request(descriptor: Sequence[float]) -> Iterable[tuple[int, int]]:
-    """
-    Encode descriptor into an authentication request.
-    """
-    return _encode(descriptor, True).keys()
-
-def registration_token(
-        masks: Iterable[dict[tuple[int, int], modulo]],
-        descriptor: Sequence[float]
-    ) -> dict[tuple[int, int], modulo]:
-    """
-    Mask descriptor to create a registration token.
-    """
-    return tinynmc.masked_factors(_encode(descriptor, False), masks)
-
-def authentication_token(
-        masks: Iterable[dict[tuple[int, int], modulo]],
-        descriptor: Sequence[float]
-    ) -> dict[tuple[int, int], modulo]:
-    """
-    Mask descriptor to create an authentication token.
-    """
-    return tinynmc.masked_factors(_encode(descriptor, True), masks)
 
 def reveal(shares: Iterable[modulo]) -> float:
     """
