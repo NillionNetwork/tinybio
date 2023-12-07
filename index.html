@@ -181,10 +181,7 @@
                                        supported by Chrome, Edge, Opera and Firefox */
       }
       #imageUploader {max-width: 100%;}
-      @media all and (max-width:900px) {
-        .client .raw { /* display:none; */ }
-        .client > .row > .col-xs-6 { /* width:100%; */ }
-      }
+      @media all and (max-width:901px) { }
       @media all and (max-width:767px) {
         .entity { padding:10px; }
         .content { padding:0px; }
@@ -198,8 +195,6 @@
         }
         h3 { font-size:14px; }
         .box-title { font-size:12px; }
-        .file-choose { font-size:12px; }
-        button { font-size:12px; }
         #result-bar { line-height:28px; font-size:24px; }
       }
       @media all and (max-width:618px) {
@@ -254,7 +249,7 @@
                 </div>
                 <div style="display:table-row;">
                   <div style="display:table-cell; vertical-align:top;">
-                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-2">
+                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
                       <div class="col-md">
                         <div class="box-title">Image</div>
                         <div>
@@ -298,17 +293,17 @@
                 </div>
                 <div style="display:table-row;">
                   <div style="display:table-cell; vertical-align:top;">
-                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-2">
+                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
                       <div class="col-md">
                         <div class="box-title">Image</div>
                         <div>
                           <div class="row">
-                            <div class="col">
+                            <div class="col" style="padding-right:4px;">
                               <div class="data-box">
                                 <img id="img-auth-a" src="auth-obama.png" />
                               </div>
                             </div>
-                            <div class="col">
+                            <div class="col" style="padding-left:4px;">
                               <div class="data-box">
                                 <img id="img-auth-b" src="auth-biden.png" />
                               </div>
@@ -455,7 +450,7 @@
         reg_token = {} # Global.
 
         def show_cutoff(s):
-            _limit = 30
+            _limit = 14
             return s[:(_limit - 3)] + '...' if len(s) > _limit else s
 
         def show_contribution(data, element_id):
@@ -544,15 +539,6 @@
       function horizontal(context, x1, y1, x2, y2, color) {
         context.fillStyle = color;
         context.fillRect(x1 - 1, y1 - 2, x2 - x1 + 2, y2 - y1 + 4);
-      }
-
-      function containImages() {
-        /*var preview = document.getElementById('img-reg');
-        let maxHeight = Math.min(100, preview.parentElement.offsetHeight);
-        if (preview.offsetHeight > maxHeight) {
-          preview.style.width = ((preview.offsetWidth * maxHeight) / preview.offsetHeight) + 'px';
-          preview.style.height = maxHeight + 'px';
-        }*/
       }
 
       function connectorsRegister() {
