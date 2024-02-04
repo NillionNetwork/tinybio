@@ -14,165 +14,103 @@
       docHead.appendChild(newLink);
     </script>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@300;400;500;700" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.2/css/all.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cabin:wght@300;400;500;700" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
     <style>
+      /*****************
+       * Color scheme. *
+       *****************/
+      :root {
+        --color-text:#000000;
+        --color-background:#FFFFFF;
+        --color-border:#000000;
+        --color-link:#0000FF;
+        --color-link-hover:#000000;
+        --color-interactive:#0000FF;
+        --color-interactive-text:#FFFFFF;
+        --color-interactive-text-disabled:#777777;
+        --color-interactive-hover:#000000;
+        --color-interactive-disabled-light:#CCCCCC;
+        --color-interactive-disabled-dark:#444444;
+        --color-interactive-shadow:#555555;
+        --color-separator:#000000;
+        --color-client-background:#FFFFFF;
+        --color-client-border:#000000;
+        --color-client-text:#000000;
+        --color-node-background:#00003F;
+        --color-node-border:#00003F;
+        --color-node-text:#FFFFFF;
+        --color-diagram-edge:#000000;
+        --color-footer-background:#0000FF;
+        --color-footer-text:#FFFFFF;
+        --color-footer-link:#FFFFFF;
+        --color-footer-link-hover:#FFFFFF;
+      }
+
+      /******************************************
+       * Customizations of common dependencies. *
+       ******************************************/
+      #pyscript_loading_splash { z-index:8192; }
+
+      /********************************************* 
+       * High-level page layout, look, and design. *
+       *********************************************/
       html { height:100vh; }
-      body { display:flex; flex-direction:column; min-height:100vh; padding:0px 0px 0px 0px; font-family:'Cabin',sans-serif; }
-      @media (min-width: 768px) { html { font-size:16px; } }
-      a { color:#0000FF; font-weight:bold; text-decoration:none; }
-      a:hover { text-decoration:none; color:#000000; }
-      #header { min-height:100px; margin-top:60px; margin-bottom:20px; }
-      .space { margin-top:30px; }
-      hr { height:1px !important; margin:0px; border-top:1px solid #000000 !important; opacity:1; }
+      body {
+        display:flex; flex-direction:column;
+        min-height:100vh;
+        min-width:500px !important;
+        padding:0px 0px 0px 0px;
+        background-color:var(--color-background);
+        font-family:'Cabin',sans-serif;
+        color:var(--color-text);
+      }
+      .container > .row { margin-bottom:8px; }
+      .card-deck .card { border:0px; min-width:220px; }
+      .card {
+        min-width:350px !important;
+        background-color:var(--color-background);
+        color:var(--color-text);
+      }
+      .card-body { padding:2px 10px 2px 10px; line-height:18px; font-size:14px; }
+      a { font-weight:bold; text-decoration:none; color:var(--color-link); }
+      a:hover { text-decoration:none; color:var(--color-link-hover); }
+      .header { min-height:100px; margin-top:60px; margin-bottom:20px; }
+      hr { margin:0px; border-top:1px solid var(--color-separator) !important; opacity:1; }
       h1 { text-align:left; }
-      h2 { margin-top:10px; line-height:21px; font-size:18px; font-weight:normal; }
+      h2 { margin-top:10px; line-height:24px; font-size:18px; font-weight:normal; }
       h3 {
         width:100%;
         margin-bottom:0px;
         padding:0px 0px 6px 0px;
         text-align:left;
-        font-size:22px;
+        white-space:nowrap;
+        font-size:20px;
       }
-      .container > .row { margin-bottom:8px; }
-      .grid-row { display:grid; grid-auto-rows:auto; grid-row-gap:0px; grid-column-gap:0px; }
-      .grid-row-clients { grid-template-columns:3fr 4.5fr 4.5fr; }
-      .grid-row-connectors { grid-template-columns:3fr 9fr; }
-      .grid-row-nodes { grid-template-columns:3fr 3fr 3fr 3fr; }
-      .grid-row-result { grid-template-columns:3fr 9fr; }
-      .grid-col { padding:0px 6px 0px 6px; }
-      .guide > ol > li { margin-left:8px; font-size:42px; font-weight:bold; }
-      .guide > ol > li > div {
-        position:relative;
-        top:-16px;
-        padding-right:8px;
-        line-height:21px; 
-        font-size:18px; font-weight:normal;
-      }
-      .content { height:100%; width:100%; margin:0px 10px 0px 0px; padding:0px 10px 0px 10px; text-align:left; }
-      .entity { height:100%; margin-top:0px; padding:20px 24px 20px 24px; border:1px solid #000000; }
-      .node { height:100%; }
-      .node > h3 { background-color:#00003F; color:#FFFFFF; }
-      .node > .entity { border-top:1px solid #FFFFFF; background-color:#00003F; color:#FFFFFF; }
-      .node-reg-title { display:none; }
-      .node-auth-title { display:none; }
-      .activated > h3 { background-color:#000000; color:#FFFFFF; }
-      .activated > .entity { border-top:1px solid #FFFFFF; background-color:#000000; color:#FFFFFF; }
-      img { width:100%; border:1px solid #FFFFFF; }
-      .clickable { cursor:pointer; }
-      .raw { display:inline-block; width:100%; overflow:hidden; word-break: break-word; word-wrap:break-word; font-family:Monospace; font-size:10px; }
-      .client { height:100%; }
-      .client > .row { }
-      .client > .row > .col { }
-      .box-title {
+      .footer-spacer { margin-top:70px; }
+      footer {
         width:100%;
-        margin-top:16px;
-        margin-bottom:10px;
-        text-align:center;
-        font-size:14px;
-        font-weight:bold;
-        line-height:16px !important;
+        margin:auto auto 0 auto;
+        padding:16px 0px 16px 0px;
+        background-color:var(--color-footer-background);
+        color:var(--color-footer-text);
       }
-      .data-box {
-        border:1px solid #000000;
-        text-align:center;
-        vertical-align:middle;
-      }
-      .data-box > div {
-        height:100%;
-        display:flex;
-        align-items:center;
-        padding:20px;
-        font-size:10px;
-        color:#999999;
-      }
-      .data-box > img { border:4px solid #FFFFFF; }
-      .clickable:hover { border:4px solid #0000FF; }
-      .action { margin-top:20px; }
-      .file-choose {
-        width:100%;
-        margin:0px 2px 2px 0px;
-        -webkit-box-shadow: 2px 2px 0px 0px #555555;
-        -moz-box-shadow: 2px 2px 0px 0px #555555;
-        box-shadow: 2px 2px 0px 0px #555555;
-        padding:8px;
-        border:0px solid #000000;
-        background-color:#0000FF;
-        text-align:center;
-        color:#FFFFFF;
-        cursor:pointer;
-      }
-      .file-choose:hover {
-        background-color:#000000;
-      }
-      .file-choose:active {
-        margin:2px 0px 0px 2px;
-        -webkit-box-shadow: 0px 0px 0px 0px #555555;
-        -moz-box-shadow: 0px 0px 0px 0px #555555;
-        box-shadow: 0px 0px 0px 0px #555555;
-      }
-      .file-choose:disabled {
-        background-color:#CCCCCC;
-        color:#777777;
-      }
-      .file-choose-disabled {
-        background-color:#CCCCCC;
-        color:#777777;
-      }
-      button {
-        width:100%;
-        margin:0px 2px 2px 0px;
-        -webkit-box-shadow: 2px 2px 0px 0px #555555;
-        -moz-box-shadow: 2px 2px 0px 0px #555555;
-        box-shadow: 2px 2px 0px 0px #555555;
-        padding:8px;
-        border:0px solid #000000;
-        background-color:#0000FF;
-        color:#FFFFFF;
-      }
-      button:hover { background-color:#000000; }
-      button:active {
-        margin:2px 0px 0px 2px;
-        -webkit-box-shadow: 0px 0px 0px 0px #555555;
-        -moz-box-shadow: 0px 0px 0px 0px #555555;
-        box-shadow: 0px 0px 0px 0px #555555;
-      }
-      button:disabled {
-        background-color:#CCCCCC;
-        color:#777777;
-      }
-      #result-bar {
-        min-width:10%;
-        margin-top:0px;
-        padding:20px;
-        background-color:#FFFFFF;
-        text-align:center;
-        line-height:36px;
-        font-size:32px;
-        color:#FFFFFF;
-      }
-      .grid-row-connectors .grid-col { height:100px; }
-      canvas { width:100%; height:100px; }
-      .card-deck .card { border:0px; min-width:220px; }
-      .card { min-width:350px !important; }
-      .card-body { padding:2px 10px 2px 10px; line-height:18px; font-size:14px; }
-      footer { width:100%; margin:auto auto 0 auto; padding:16px 0px 16px 0px; background-color:#0000FF; color:#FFFFFF; }
-      footer a { color:#FFFFFF; }
-      footer a:hover { color:#FFFFFF; }
+      footer a { color:var(--color-footer-link); }
+      footer a:hover { color:var(--color-footer-link-hover); }
       footer .card-deck { margin-bottom:0px !important; }
-      footer .card { margin-bottom:0px !important; border:0px; background-color:#0000FF; }
+      footer .card { margin-bottom:0px !important; border:0px; background-color:var(--color-footer-background); }
       footer .card-body-items { padding:8px 20px 0px 20px; }
       footer .card-body-items-left { float:left; }
       footer .card-body-items-right { float:right; }
       footer .card-deck-copyright { height:26x !important; font-size:10px; }
       footer .card-copyright { height:26px !important; padding:0px 16px 0px 16px; font-size:12px !important; }
-      footer .license-phrase { color:#FFFFFF; }
-      footer .item { margin:0px 25px 0px 0px; white-space: nowrap; font-size:14px; }
+      footer .license-phrase { color:var(--color-footer-text); }
+      footer .item { margin:0px 25px 0px 0px; white-space:nowrap; font-size:14px; }
       footer .icon { margin:0px 15px 0px 0px; font-size:20px; }
-      footer .icon-last { margin:0px 0px 0px 0px; font-size:18px; }
+      footer .icon:last-child { margin-right:0px; font-size:18px; }
       .noselect {
         -webkit-touch-callout:none; /* iOS Safari */
           -webkit-user-select:none; /* Safari */
@@ -182,56 +120,212 @@
                   user-select:none; /* Non-prefixed version, currently
                                        supported by Chrome, Edge, Opera and Firefox */
       }
-      #imageUploader {max-width: 100%;}
-      @media all and (max-width:991px) {
-        .selector-image { min-height:220px; }
+      @media (min-width: 768px) { html { font-size:16px; } }
+      @media all and (max-width:618px) { .header { margin-top:50px; } }
+
+
+      /************************************************************
+       * Layout for steps and data flow visualization containers. *
+       ************************************************************/
+      .grid-row { display:grid; grid-auto-rows:auto; grid-row-gap:0px; grid-column-gap:0px; }
+      .grid-col { padding:0px 6px 0px 6px; }
+      .grid-row-clients { grid-template-columns:3fr 4.5fr 4.5fr; }
+      .grid-row-nodes { grid-template-columns:3fr 3fr 3fr 3fr; }
+      .grid-row-recipient { grid-template-columns:3fr 9fr; }
+      .grid-row-diagram { grid-template-columns:3fr 9fr; }
+      .grid-row-diagram .grid-col { height:100px; }
+
+      /**************************************************** 
+       * Guidance/expository content layout and behavior. *
+       ****************************************************/
+      .step > ol > li { margin-left:8px; font-size:42px; font-weight:bold; }
+      .step > ol > li > div {
+        position:relative;
+        top:-16px;
+        padding-right:8px;
+        line-height:24px; 
+        font-size:18px; font-weight:normal;
+      }
+      @media all and (max-width:991px) { 
+        .step > ol > li { font-size:32px; }
+        .step > ol > li > div { top:-10px; padding-right:0px; line-height:20px; font-size:18px; }
       }
       @media all and (max-width:767px) {
-        .entity { padding:10px; }
-        .content { padding:0px; }
-        .guide > ol { margin-left:-12px; }
-        .guide > ol > li { font-size:26px; }
-        .guide > ol > li > div {
-          top:-10px;
-          padding-right:0px;
-          line-height:14px;
-          font-size:12px;
-        }
-        h3 { font-size:14px; }
-        .box-title { font-size:12px; }
-        .node-reg-title { line-height:8px !important; font-size:6px; }
-        .node-auth-title { line-height:8px !important; font-size:6px; }
-        .raw { line-height:10px !important; font-size:8px; }
-        .file-choose { font-size:14px; }
-        button { font-size:14px; }
-        #result-bar { line-height:28px; font-size:24px; }
+        .step > ol { margin-left:-12px; }
+        .step > ol > li { font-size:26px; }
+        .step > ol > li > div { top:-10px; padding-right:0px; line-height:14px; font-size:12px; }
       }
-      @media all and (max-width:618px) {
-        #header { margin-top:50px; }
-        #license-phrase { /* display:none; */ }
+
+      /***********************************************************
+       * Panel elements (representing parties) and their layout. *
+       ***********************************************************/
+      .panel { height:100%; width:100%; margin:0px 10px 0px 0px; padding:0px 10px 0px 10px; }
+      .entity { height:100%; margin-top:0px; padding:20px 24px 20px 24px; }
+      .entity > div { display:table; height:100%; width:100%; }
+      .entity > div > div { display:table-row; }
+      .entity > div > div > div { display:table-cell; padding-bottom:14px; text-align:center; }
+      .entity > div > div:last-child > div { vertical-align:bottom; } /* Usually client buttons. */
+      .client {
+        border:1px solid var(--color-client-border);
+        background-color:var(--color-client-background);
+        color:var(--color-client-text);
+      }
+      .node {
+        border:1px solid var(--color-node-border);
+        background-color:var(--color-node-background);
+        color:var(--color-node-text);
+      }
+      .recipient > div > div > div { vertical-align:middle !important; } /* Usually output. */
+      h3 { margin-bottom:6px; }
+      h4 { margin-top:8px; padding-top:2px; text-align:center; line-height:16px !important; font-size:14px; }
+      @media all and (max-width:991px) { 
+        .client { padding:10px; }
+        h3 { font-size:14px; }
+      }
+      @media all and (max-width:767px) {
+        .panel { padding:0px; }
+        .entity { padding:10px; }
+        h4 { line-height:14px; font-size:12px !important; }
       }
       @media all and (max-width:575px) {
-        .selector-image { min-height:160px; }
-        .file-choose { line-height:12px !important; font-size:10px; }
+        .entity { height:100%; margin-top:0px; }
+        h3 { font-size:14px; }
+        h4 { line-height:12px !important; font-size:10px !important; }
+      }
+
+      /**************************************************** 
+       * Interactive user interface (UI) common elements. *
+       ****************************************************/
+      .array { height:20px; margin:0px 4px 0px 4px; white-space:nowrap; }
+      .array > span {
+        padding:1px 4px 1px 4px;
+        border-top:1px solid var(--color-text);
+        border-left:1px solid var(--color-text);
+        border-bottom:1px solid var(--color-text);
+        font-size:12px; font-weight:bold;
+      }
+      .array > span:last-child { border-right:1px solid var(--color-text); }
+      .bytes { position:relative; height:10px; margin:8px 4px 8px 4px; white-space:nowrap; }
+      .bytes > span {
+        position:relative; top:-2px;
+        padding-right:24px;
+        font-size:14px;
+      }
+      .bytes > table { height:100%; width:100%; }
+      @media all and (max-width:539px) {
+        .array > span { font-size:10px; }
+        .bytes > span { font-size:10px; }
+      }
+      button {
+        width:100%;
+        margin:0px 2px 2px 0px;
+        -webkit-box-shadow: 2px 2px 0px 0px var(--color-interactive-shadow);
+        -moz-box-shadow: 2px 2px 0px 0px var(--color-interactive-shadow);
+        box-shadow: 2px 2px 0px 0px var(--color-interactive-shadow);
+        padding:8px;
+        border:0px solid #000000;
+        background-color:var(--color-interactive);
+        color:var(--color-interactive-text);
+      }
+      button:hover { background-color:var(--color-interactive-hover); }
+      button:active {
+        margin:2px 0px 0px 2px;
+        -webkit-box-shadow: 0px 0px 0px 0px var(--color-interactive-shadow);
+        -moz-box-shadow: 0px 0px 0px 0px var(--color-interactive-shadow);
+        box-shadow: 0px 0px 0px 0px var(--color-interactive-shadow);
+      }
+      button:disabled {
+        background-color:var(--color-interactive-disabled-light);
+        color:var(--color-interactive-text-disabled);
+      }
+      #recipient-output {
+        margin-top:0px;
+        padding:0px 20px 10px 20px;
+        text-align:center;
+        font-size:32px;
+      }
+      @media all and (max-width:767px) {
+        button { font-size:14px; }
+        #recipient-output { line-height:28px; font-size:24px; }
+      }
+      @media all and (max-width:575px) {
         button { line-height:12px !important; font-size:10px; }
-        #result-bar { margin-bottom:20px; line-height:22px; font-size:18px; }
+        #recipient-output { margin-bottom:6px; line-height:24px; font-size:20px; }
       }
-      @media all and (max-width:400px) {
-        .card { min-width:250px !important; }
+
+      /***************************************************************
+       * Interactive user interface (UI) custom layout and elements. *
+       ***************************************************************/
+      .clickable { cursor:pointer; }
+      .clickable:hover { border:4px solid var(--color-interactive); }
+      img { width:100%; border:1px solid var(--color-background); }
+      .box-title {
+        width:100%;
+        margin-top:16px;
+        margin-bottom:10px;
+        text-align:center;
+        font-size:14px;
+        font-weight:bold;
+        line-height:16px !important;
       }
-      @media all and (max-width:320px) { }
+      .data-box { border:1px solid var(--color-border); text-align:center; vertical-align:middle; }
+      .data-box > div {
+        height:100%;
+        display:flex;
+        align-items:center;
+        padding:20px;
+        font-size:10px;
+        color:var(--color-interactive-text-disabled);
+      }
+      .data-box > img { border:4px solid var(--color-background); }
+      .file-choose {
+        width:100%;
+        margin:0px 2px 2px 0px;
+        -webkit-box-shadow: 2px 2px 0px 0px var(--color-interactive-shadow);
+        -moz-box-shadow: 2px 2px 0px 0px var(--color-interactive-shadow);
+        box-shadow: 2px 2px 0px 0px var(--color-interactive-shadow);
+        padding:8px;
+        border:0px solid var(--color-border);
+        background-color:var(--color-interactive);
+        text-align:center;
+        color:var(--color-interactive-text);
+        cursor:pointer;
+      }
+      .file-choose:hover { background-color:var(--color-interactive-hover); }
+      .file-choose:active {
+        margin:2px 0px 0px 2px;
+        -webkit-box-shadow: 0px 0px 0px 0px var(--color-interactive-shadow);
+        -moz-box-shadow: 0px 0px 0px 0px var(--color-interactive-shadow);
+        box-shadow: 0px 0px 0px 0px var(--color-interactive-shadow);
+      }
+      .file-choose:disabled { background-color:var(--color-interactive-disabled-light); color:var(--color-interactive-text-disabled); }
+      .file-choose-disabled { background-color:var(--color-interactive-disabled-light); color:var(--color-interactive-text-disabled); }
+      .int { width:100%; overflow:hidden; word-break:break-word; word-wrap:break-word; font-family:Monospace; font-size:10px; }
+      @media all and (max-width:991px) { .data-box-container { vertical-align:bottom; } }
     </style>
   </head>
-  <body onload="connectors();">
-    <div class="container" id="header">
+  <body>
+    <div class="container header">
       <div class="card-deck mb-3">
         <div class="card mb-4">
           <div class="card-body">
             <h1><b>tinybio</b>: Secure Decentralized Biometric Authentication Demo</h1>
             <hr/>
             <h2>
-              This <a href="https://nillion.pub/decentralized-multifactor-authentication.pdf">decentralized biometric authentication</a> demo (<a href="https://github.com/nillion-oss/tinybio/tree/gh-pages">source code available</a>) simulates a secure multi-party computation (MPC) protocol <b>entirely in your browser</b> by importing and running the <a href="https://github.com/nillion-oss/tinybio">tinybio</a> and underlying <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> libraries using <a href="https://pyscript.net">PyScript</a>.
+              <p>
+              This <a href="https://nillion.pub/decentralized-multifactor-authentication.pdf">decentralized biometric authentication</a> demo (source code <a href="https://github.com/nillion-oss/tinybio/tree/gh-pages">available on GitHub</a>) simulates a secure multi-party computation (MPC) protocol <b>entirely in your browser</b> by importing and invoking the <a href="https://github.com/nillion-oss/tinybio">tinybio</a> and underlying <a href="https://github.com/nillion-oss/tinynmc">tinynmc</a> libraries using <a href="https://pyscript.net">PyScript</a>.
               The <a href="https://justadudewhohacks.github.io/face-api.js/docs/index.html">face-api.js</a> library is used for face detection and to generate descriptors.
+              </p>
+              <p>
+                Within the implementation of the library, vectors of <a href="https://en.wikipedia.org/wiki/Finite_field">finite field</a> elements are used to represent both submitted descriptors and the overall result. In the visualizations below, instances of these data structures are rendered using a variant of a <a href="https://en.wikipedia.org/wiki/Heat_map">heat map</a> in which the brightness value corresponds to the difference between the finite field element and zero. For example, a vector such as
+                <span class="array">
+                  <span>1 mod 11</span><span>5 mod 11</span><span>8 mod 11</span><span>3 mod 11</span><span>10 mod 11</span>
+                </span>
+                would be represented by
+                <span class="bytes" style="margin-right:-2px;">
+                  <span style="background-color:rgb(25,25,25);">&nbsp;</span><span style="background-color:rgb(128,128,128);"></span><span style="background-color:rgb(200,200,200);"></span><span style=" background-color:rgb(80,80,80);"></span><span style="background-color:rgb(230,230,230);"></span>
+                </span>.
+              </p>
             </h2>
           </div>
         </div>
@@ -240,27 +334,23 @@
     <div class="container">
       <div class="grid-row grid-row-clients">
         <div class="grid-col">
-          <div class="guide">
-            <div class="guide">
-              <ol start="1">
-                <li>
-                  <div>
-                    During both registration and authentication, the selected image is encoded as a <i>descriptor</i> (<i>i.e.</i>, a vector numeric values), masks are requested from the nodes, and the masked descriptor (or <i><a href="https://tinybio.readthedocs.io/en/0.1.0/_source/tinybio.html#tinybio.tinybio.token">token</a></i>) is broadcast to all the nodes.
-                  </div>
-                </li>
-              </ol>
-            </div>
+          <div class="step">
+            <ol start="1">
+              <li>
+                <div>
+                  During both registration and authentication, the selected image is encoded as a <i>descriptor</i> (<i>i.e.</i>, a vector numeric values), masks are requested from the nodes, and the masked descriptor (or <i><a href="https://tinybio.readthedocs.io/en/0.1.0/_source/tinybio.html#tinybio.tinybio.token">token</a></i>) is broadcast to all the nodes.
+                </div>
+              </li>
+            </ol>
           </div>
         </div>
         <div class="grid-col">
-          <div class="content">
+          <div class="panel" id="panel-register">
             <div class="entity client">
-              <div style="display:table; height:100%; width:100%;">
-                <div style="display:table-row;">
-                  <h3>Registration</h3>
-                </div>
-                <div style="display:table-row;">
-                  <div style="display:table-cell; vertical-align:top;">
+              <div>
+                <div><h3>Registration</h3></div>
+                <div>
+                  <div style="height:100%;">
                     <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
                       <div class="col-md">
                         <div class="box-title noselect">Image</div>
@@ -268,44 +358,40 @@
                           <div class="data-box" style="margin-bottom:6px;">
                             <img id="img-reg" class="clickable" src="reg-obama.png" />
                           </div>
-                          <label id="imageUploaderLabel" class="file-choose">
-                            <input type="file" id="imageUploader" accept="image/*" style="width:100% !important; display:none;" />
+                          <label id="image-uploader-label" class="file-choose">
+                            <input type="file" id="image-uploader" accept="image/*" style="width:100% !important; display:none;" />
                             Choose File
                           </label>
                         </div>
                       </div>
                       <div class="col-md">
-                        <div class="box-title noselect">Descriptor</div>
-                        <div class="data-box" style="aspect-ratio:1;">
-                          <div class="raw noselect" id="auth_obama_register">Please select an image on the left</div>
+                        <div style="display:table; height:100%; width:100%;">
+                          <div style="display:table-row; height:100%;">
+                            <div class="data-box-container" style="display:table-cell; height:100%;">
+                              <div class="box-title noselect">Descriptor</div>
+                              <div class="data-box" style="aspect-ratio:1;">
+                                <div class="raw noselect" id="client-0-descriptor">Please select an image on the left</div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div style="display:table-row;">
-                  <div style="display:table-cell; vertical-align:bottom;">
-                    <div class="row row-cols-1 action">
-                      <div class="col">
-                        <button id="register" disabled>Mask &amp; Register</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <div><div><button id="register" disabled>Mask &amp; Register</button></div></div>
               </div>
             </div>
           </div>
         </div>
         <div class="grid-col">
-          <div class="content" id="panel-authenticate" style="opacity:0.2;">
+          <div class="panel" id="panel-authenticate">
             <div class="entity client">
-              <div style="display:table; height:100%;">
-                <div style="display:table-row;">
-                  <h3>Authentication</h3>
-                </div>
-                <div style="display:table-row;">
-                  <div style="display:table-cell; vertical-align:top;">
-                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
+              <div>
+                <div><h3>Authentication</h3></div>
+                <div>
+                  <div style="height:100%;">
+                    <div class="row row-cols-xs-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2" style="height:100%;">
                       <div class="col-md">
                         <div class="box-title noselect">Image</div>
                         <div class="selector-image">
@@ -324,37 +410,35 @@
                         </div>
                       </div>
                       <div class="col-md">
-                        <div class="box-title noselect">Descriptor</div>
-                        <div class="data-box" style="aspect-ratio:1;">
-                          <div class="raw noselect" id="auth_login">Please select an image on the left</div>
+                        <div style="display:table; height:100%; width:100%;">
+                          <div style="display:table-row; height:100%;">
+                            <div class="data-box-container" style="display:table-cell; height:100%;">
+                              <div class="box-title noselect">Descriptor</div>
+                              <div class="data-box" style="aspect-ratio:1;">
+                                <div class="raw noselect" id="client-1-descriptor">Please select an image on the left</div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div style="display:table-row;">
-                  <div style="display:table-cell; vertical-align:bottom;">
-                    <div class="row row-cols-1 action">
-                      <div class="col">
-                        <button id="authenticate" disabled>Mask &amp; Authenticate</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <div><div><button id="authenticate" disabled>Mask &amp; Authenticate</button></div></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="grid-row grid-row-connectors">
+      <div class="grid-row grid-row-diagram">
         <div class="grid-col"></div>
         <div class="grid-col">
-          <canvas id="canvas-register-and-login"></canvas>
+          <div id="diagram-input"></div>
         </div>
       </div>
       <div class="grid-row grid-row-nodes">
         <div class="grid-col">
-          <div class="guide" id="step-nodes" style="opacity:0.2;">
+          <div class="step" id="step-nodes">
             <ol start="2">
               <li>
                 <div>
@@ -365,66 +449,96 @@
           </div>
         </div>
         <div class="grid-col">
-          <div class="content node" id="panel-node-one" style="opacity:0.2;">
-            <div class="entity">
-              <h3>Node 1</h3>
-              <div class="row row-cols-1">
-                <div class="col-xs-6" style="text-align:center;">
-                  <div class="box-title noselect node-reg-title">Registration Token</div>
-                  <canvas id="node-one-reg-token" style="width:100%; height:50px;"></canvas>
-                  <div class="box-title noselect node-auth-title">Authentication Token</div>
-                  <canvas id="node-one-auth-token" style="width:100%; height:50px;"></canvas>
-                  <div class="box-title noselect node-auth-title">Secret Share of Result</div>
-                  <div class="raw" id="node-one"></div>
+          <div class="panel">
+            <div class="entity node" id="node-0">
+              <div>
+                <div><h3>Node 0</h3></div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-0-token-0-title" style="opacity:0;">Registration Token</h4>
+                    <div class="bytes" id="node-0-token-0-masked"></div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-0-token-1-title" style="opacity:0;">Authentication Token</h4>
+                    <div class="bytes" id="node-0-token-1-masked"></div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-0-share-title" style="opacity:0;">Secret Share of Result</h4>
+                    <div class="int" id="node-0-share"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="grid-col">
-          <div class="content node" id="panel-node-two" style="opacity:0.2;">
-            <div class="entity">
-              <h3>Node 2</h3>
-              <div class="row row-cols-1">
-                <div class="col-xs-6">
-                  <div class="box-title noselect node-reg-title">Registration Token</div>
-                  <canvas id="node-two-reg-token" style="width:100%; height:50px;"></canvas>
-                  <div class="box-title noselect node-auth-title">Authentication Token</div>
-                  <canvas id="node-two-auth-token" style="width:100%; height:50px;"></canvas>
-                  <div class="box-title noselect node-auth-title">Secret Share of Result</div>
-                  <div class="raw" id="node-two"></div>
+          <div class="panel">
+            <div class="entity node" id="node-1">
+              <div>
+                <div><h3>Node 1</h3></div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-1-token-0-title" style="opacity:0;">Registration Token</h4>
+                    <div class="bytes" id="node-1-token-0-masked"></div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-1-token-1-title" style="opacity:0;">Authentication Token</h4>
+                    <div class="bytes" id="node-1-token-1-masked"></div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-1-share-title" style="opacity:0;">Secret Share of Result</h4>
+                    <div class="int" id="node-1-share"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="grid-col">
-          <div class="content node" id="panel-node-three" style="opacity:0.2;">
-            <div class="entity">
-              <h3>Node 3</h3>
-              <div class="row row-cols-1">
-                <div class="col-xs-6">
-                  <div class="box-title noselect node-reg-title">Registration Token</div>
-                  <canvas id="node-three-reg-token" style="width:100%; height:50px;"></canvas>
-                  <div class="box-title noselect node-auth-title">Authentication Token</div>
-                  <canvas id="node-three-auth-token" style="width:100%; height:50px;"></canvas>
-                  <div class="box-title noselect node-auth-title">Secret Share of Result</div>
-                  <div class="raw" id="node-three"></div>
+          <div class="panel">
+            <div class="entity node" id="node-2">
+              <div>
+                <div><h3>Node 2</h3></div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-2-token-0-title" style="opacity:0;">Registration Token</h4>
+                    <div class="bytes" id="node-2-token-0-masked"></div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-2-token-1-title" style="opacity:0;">Authentication Token</h4>
+                    <div class="bytes" id="node-2-token-1-masked"></div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <h4 class="noselect" id="node-2-share-title" style="opacity:0;">Secret Share of Result</h4>
+                    <div class="int" id="node-2-share"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="grid-row grid-row-connectors">
+      <div class="grid-row grid-row-diagram">
         <div class="grid-col"></div>
         <div class="grid-col">
-          <canvas id="canvas-reconstruct"></canvas>
+          <div id="diagram-output"></div>
         </div>
       </div>
-      <div class="grid-row grid-row-result">
+      <div class="grid-row grid-row-recipient">
         <div class="grid-col">
-          <div class="guide" id="step-output" style="opacity:0.2;">
+          <div class="step" id="step-recipient">
             <ol start="3">
               <li>
                 <div>
@@ -435,15 +549,13 @@
           </div>
         </div>
         <div class="grid-col">
-          <div class="content" id="panel-output" style="opacity:0.2;">
-            <div class="entity">
-              <div style="display:table; height:100%; width:100%;">
-                <div style="display:table-row;">
-                  <h3>Network Output</h3>
-                </div>
-                <div style="display:table-row;">
-                  <div style="display:table-cell; width:100%; vertical-align:middle;">
-                    <div id="result-bar"></div>
+          <div class="panel">
+            <div class="entity client recipient" id="recipient">
+              <div>
+                <div><h3>Network Output</h3></div>
+                <div>
+                  <div>
+                    <div id="recipient-output"></div>
                   </div>
                 </div>
               </div>
@@ -452,18 +564,21 @@
         </div>
       </div>
     </div>
-    <div class="space"></div>
+    <div class="footer-spacer"></div>
     <footer>
       <div class="container noselect">
         <div class="card-deck mb-3">
           <div class="card mb-4">
             <div class="card-body card-body-items">
               <div class="card-body-items-left">
-                <span class="item"><span class="license-phrase">Made available under the </span><a href="https://opensource.org/license/mit/">MIT License</a></span>
+                <span class="item">
+                  <span class="license-phrase">Made available under the </span>
+                  <a href="https://opensource.org/license/mit/">MIT License</a>
+                </span>
               </div>
               <div class="card-body-items-right">
                 <span class="icon"><a href="mailto:engineering@nillion.com"><i class="far fa-envelope"></i></a></span>
-                <span class="icon-last"><a href="https://github.com/nillion-oss"><i class="fab fa-github"></i></a></span>
+                <span class="icon"><a href="https://github.com/nillion-oss"><i class="fab fa-github"></i></a></span>
               </div>
             </div>
           </div>
@@ -474,70 +589,60 @@
       </div>
     </footer>
     <py-config>
-      packages = ["tinybio"]
+      packages = ["tinybio~=0.1"]
     </py-config>
     <section class="pyscript">
       <py-script>
-        from typing import Sequence, Iterable
-        import math
         from pyodide.ffi import create_proxy
         import js
         from tinybio import *
 
-        reg_token = {} # Global.
-        broadcast = None
+        def modulo_to_uint8(m):
+            return (256 * int(m)) // m.modulus
 
-        def show_cutoff(s, _limit=14):
+        def show_with_cutoff(s, _limit=12):
             return s[:(_limit - 3)] + '...' if len(s) > _limit else s
 
-        def show_contribution(data, element_id, reg_or_auth):
-            lines = []
-            for (_, v) in list(data.items())[:9]:
-                lines.append(show_cutoff(str(int(v))))
-
+        def show_share(share, element_id):
             element = js.document.getElementById(element_id)
-            element.innerHTML = '<div>' + ('<br/>'.join(lines + ['...'])) + '</div>'
-            
-            global broadcast
-            broadcast = [((256 * int(v)) // v.modulus) for (_, v) in data.items()]
-            js.showToken(reg_or_auth)
+            share = str(int(share))
+            element.innerHTML = show_with_cutoff(share, len(share))
 
-        def show_computation(data, element_id):
-            element = js.document.getElementById(element_id)
-            share = str(int(data))
-            element.innerHTML = show_cutoff(share, len(share))
-
-        def compute_and_reveal(nodes, reg_token, auth_token):
+        def compute_and_reveal(reg_token, auth_token):
             shares = []
-            for (name, node) in zip(['one', 'two', 'three'], nodes):
+            for (node_id, node) in enumerate(nodes):
                 result_share = node.authenticate(reg_token, auth_token)
                 shares.append(result_share)
-                show_computation(result_share, 'node-' + name)
+                js.nodeShowShare(node_id)
+                show_share(result_share, 'node-' + str(node_id) + '-share')
 
             result = reveal(shares)
-
-            js.document.getElementById('result-bar').style.color = '#000000'
-            js.document.getElementById('result-bar').style.backgroundColor = '#FFFFFF'
-            js.document.getElementById('result-bar').style.width = '100%'
-            js.document.getElementById('result-bar').innerHTML = \
+            js.document.getElementById('recipient-output').innerHTML = \
                 'Euclidean distance between descriptors: ' + str(result)[:7] + '.'
 
         def mask_and_register(_):
             global reg_token
-            js.maskAndRegister()
-            descriptor = list(js.getRegistrationDescriptor())
+            js.clientMaskAndRegister()
+            descriptor = list(js.clientGetRegistrationDescriptor())
+            js.clientShowDescriptor(0, [64 + (int(255 * i) % 196) for i in descriptor])
+            js.nodesEnable()
             masks = [node.masks(request.registration(descriptor)) for node in nodes]
             reg_token = token.registration(masks, descriptor)
-            show_contribution(reg_token, 'auth_obama_register', 'reg')
+            for node_id in range(3):
+                js.nodeShowTokenMasked(0, node_id, [modulo_to_uint8(m) for m in reg_token.values()])
 
         def mask_and_authenticate(_):
-            js.maskAndAuthenticate()
-            descriptor = list(js.getAuthenticationDescriptor())
+            js.clientMaskAndAuthenticate()
+            descriptor = list(js.clientGetAuthenticationDescriptor())
+            js.clientShowDescriptor(1, [64 + (int(255 * i) % 196) for i in descriptor])
+            js.recipientEnable()
             masks = [node.masks(request.authentication(descriptor)) for node in nodes]
             auth_token = token.authentication(masks, descriptor)
-            show_contribution(auth_token, 'auth_login', 'auth')
-            compute_and_reveal(nodes, reg_token, auth_token)
+            for node_id in range(3):
+                js.nodeShowTokenMasked(1, node_id, [modulo_to_uint8(m) for m in auth_token.values()])
+            compute_and_reveal(reg_token, auth_token)
 
+        reg_token = {} # Global.
         nodes = [node(), node(), node()]
         preprocess(nodes, length=128)
         js.document.getElementById('register').addEventListener('click', create_proxy(mask_and_register))
@@ -545,87 +650,97 @@
       </py-script>
       <input id="active" type="hidden" value="none"/>
     </section>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous">
     </script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
     <script src="face-api.js"></script>
     <script>
-      let registrationDescriptorForPython;
-      let authenticationDescriptorOneForPython;
-      let authenticationDescriptorTwoForPython;
-      let regImageChosen = false;
-      let registered = false;
-      let authImageChosen = null;
-      let authenticated = false;
+      class Diagram {
+        constructor (elementId, height, thickness) {
+          this.element = document.getElementById(elementId);
+          this.height = height;
+          this.thickness = (thickness !== null) ? 2 : thickness;
+          this.shows = {};
+          this.element.style.position = "relative";
+          this.element.style.height = height + "px";
+        }
 
-      function getRegistrationDescriptor() {
-        return registrationDescriptorForPython;
-      }
+        edge (top, elementId, elementIds) {
+          const edge = document.createElement("div");
+          edge.style.position = "absolute";
+          edge.style.top = top + "%";
+          edge.style.border = this.thickness + "px solid var(--color-diagram-edge)";
+          edge.style.opacity = 0;
+          if (elementId !== null) {
+            edge.id = elementId;
+            this.shows[elementId] = (elementIds == null) ? [] : elementIds;
+          }
+          this.element.appendChild(edge);
+          return edge;
+        }
 
-      function getAuthenticationDescriptor() {
-        return (
-          (authImageChosen == "a") 
-          ? authenticationDescriptorOneForPython
-          : authenticationDescriptorTwoForPython
-        );
-      }
+        vertical (index, total, top, height, elementId, elementIds) {
+          const edge = this.edge(top, elementId, elementIds);
+          edge.style.left = Math.round((100 * (1 + (2 * index))) / (2 * total))  + "%";
+          edge.style.height = height + "%";
+          edge.style.width = 0 + "px";
+        }
 
-      const canvas_register_and_login = document.getElementById("canvas-register-and-login");
-      const context_register_and_login = canvas_register_and_login.getContext("2d");
-      const canvas_reconstruct = document.getElementById("canvas-reconstruct");
-      const context_reconstruct = canvas_reconstruct.getContext("2d");
+        horizontal (total, top, elementId, elementIds) {
+          const edge = this.edge(top, elementId, elementIds);
+          const denom = 2 * total, left = Math.round(100 / denom);
+          edge.style.left = left + "%";
+          edge.style.height = 0 + "px";
+          edge.style.width = "calc(" +
+            (2 * this.thickness) + "px + " + Math.round(100 - (100 / denom) - left) +
+          "%)";
+        }
 
-      function vertical(context, x1, y1, x2, y2, color) {
-        context.fillStyle = color;
-        context.fillRect(x1 - 1, y1, x2 - x1 + 2, y2 - y1);
-      }
-
-      function horizontal(context, x1, y1, x2, y2, color) {
-        context.fillStyle = color;
-        context.fillRect(x1 - 1, y1 - 2, x2 - x1 + 2, y2 - y1 + 4);
-      }
-
-      function connectorsRegister() {
-        if (regImageChosen) {
-          // Registration and login connectors.
-          canvas_register_and_login.width = canvas_register_and_login.offsetWidth;
-          let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
-
-          vertical(context_register_and_login, w/6, 0, w/6, h/2, "#CCCCCC");
-          horizontal(context_register_and_login, w/6, h/2, (5*w)/6, h/2, "#CCCCCC");
-          vertical(context_register_and_login, w/2, h/2, w/2, h, "#CCCCCC");
-          vertical(context_register_and_login, w/6, h/2, w/6, h, "#CCCCCC");
-          vertical(context_register_and_login, (5*w)/6, h/2, (5*w)/6, h, "#CCCCCC");
+        show (elementId) {
+          document.getElementById(elementId).style.opacity = 1;
+          if (elementId in this.shows) {
+            for (let i = 0; i < this.shows[elementId].length; i++) {
+              this.show(this.shows[elementId][i]);
+            }
+          }
         }
       }
 
-      function connectorsAuthenticate() {
-        if (authenticated) {
-          // Authentication connectors.
-          let w = canvas_register_and_login.width, h = canvas_register_and_login.height;
-          const offset = 30;
-          vertical(context_register_and_login, (5*w)/6 + offset, 0, (5*w)/6 + offset, (3*h)/4, "#000000");
-          horizontal(context_register_and_login, w/6 + offset, (3*h)/4, (5*w)/6 + offset, (3*h)/4, "#000000");
-          vertical(context_register_and_login, w/2 + offset, (3*h)/4, w/2 + offset, h, "#000000");
-          vertical(context_register_and_login, w/6 + offset, (3*h)/4, w/6 + offset, h, "#000000");
-          vertical(context_register_and_login, (5*w)/6 + offset, (3*h)/4, (5*w)/6 + offset, h, "#000000");
-
-          // Reconstruction connectors.
-          canvas_reconstruct.width = canvas_reconstruct.offsetWidth;
-          w = canvas_reconstruct.width, h = canvas_reconstruct.height;
-
-          vertical(context_reconstruct, w/2, 0, w/2, h/2, "#0000FF");
-          vertical(context_reconstruct, w/6, 0, w/6, h/2, "#0000FF");
-          vertical(context_reconstruct, (5*w)/6, 0, (5*w)/6, h/2, "#0000FF");
-          horizontal(context_reconstruct, w/6, h/2, (5*w)/6, h/2, "#0000FF");
-          vertical(context_reconstruct, w/2, h/2, w/2, h, "#0000FF");
+      function showBytes(elementId, array) {
+        const bytes = document.getElementById(elementId);
+        bytes.innerHTML = "";
+        bytes.classList.add("bytes");
+        bytes.style.height = "auto";
+        bytes.style.backgroundColor = "#FFFFFF";
+        const table = document.createElement("table");
+        table.style.width = "100%";
+        let tr = document.createElement("tr");
+        for (let i = 0; i < array.length - 1; i++) {
+          const td = document.createElement("td");
+          td.style.backgroundColor = "rgb(" + array[i] + "," + array[i] + "," + array[i] + ")";
+          td.style.height = "10px";
+          tr.appendChild(td);
+          if (i % 16 == 15) {
+              table.appendChild(tr);
+              tr = document.createElement("tr");
+          }
         }
+        table.appendChild(tr);
+        bytes.appendChild(table);
       }
 
-      const renderFace = async (image, x, y, width, height) => {
+      function setOpacities(opacity, elementIds) {
+        elementIds.map(function(elementId) {
+          document.getElementById(elementId).style.opacity = opacity;
+        });
+      }
+
+      const faceApiRenderFace = async (image, x, y, width, height) => {
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
@@ -635,7 +750,7 @@
         canvas.toBlob((blob) => { image.src = URL.createObjectURL(blob); }, "image/jpeg");
       };
 
-      async function extractDescriptor(imgElement, render) {
+      async function faceApiExtractDescriptor(imgElement, render) {
         const detection = await
           faceapi.detectSingleFace(
             imgElement,
@@ -646,133 +761,24 @@
 
         if (detection && render) {
           const { x, y, width, height } = detection.detection.box;
-          renderFace(imgElement, x, y, width, height);
+          faceApiRenderFace(imgElement, x, y, width, height);
         }
 
         return detection;
       }
 
-      // Handle image from image selector.
-      document.getElementById('imageUploader').addEventListener(
-        'change',
-        function(event) {
-          var file = event.target.files[0];
-          var reader = new FileReader();
-
-          reader.onload = function(e) {
-            var img = document.getElementById('img-reg');
-            img.src = URL.createObjectURL(file);
-            img.onload = () => URL.revokeObjectURL(img.src);  // Free memory
-            img.style.display = 'block';
-
-            // Process the chosen image with face-api.js and make the output available
-            // to the Python component.
-            extractDescriptor(img, true).then((detection) => {
-              registrationDescriptorForPython = detection.descriptor;
-            });
-
-            regImageChosen = true;
-            document.getElementById('img-reg').style.border = '4px solid #0000FF';
-            document.getElementById('register').disabled = false;
-          };
-          reader.readAsDataURL(file);
-          regImageChosen = true;
-        }
-      );
-
-      document.getElementById('img-reg').addEventListener('click', function(event) {
-        if (!regImageChosen) {
-          document.getElementById('img-reg').style.border = '4px solid #0000FF';
-          document.getElementById('register').disabled = false;
-          regImageChosen = true;
-        }
-      });
-
-      document.getElementById('img-auth-a').addEventListener('click', function(event) {
-        if (registered && !authenticated) {
-          authImageChosen = 'a';
-          document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
-          document.getElementById('img-auth-b').style.border = '4px solid #FFFFFF';
-          document.getElementById('authenticate').disabled = false;
-        }
-      });
-
-      document.getElementById('img-auth-b').addEventListener('click', function(event) {
-        if (registered && !authenticated) {
-          authImageChosen = 'b';
-          document.getElementById('img-auth-a').style.border = '4px solid #FFFFFF';
-          document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
-          document.getElementById('authenticate').disabled = false;
-        }
-      });
-
-      function maskAndRegister() {
-        document.getElementById("register").disabled = true;
-        document.getElementById("imageUploader").disabled = true;
-        document.getElementById("imageUploaderLabel").style.backgroundColor = "#CCCCCC";
-        document.getElementById("imageUploaderLabel").style.color = "#777777";
-        document.getElementById("imageUploaderLabel").style.cursor = "default";
-        document.getElementById("img-reg").style.cursor = "auto";
-        document.getElementById("img-reg").style.border = "4px solid #999999";
-        connectorsRegister();
-
-        [
-          "panel-authenticate",
-          "step-nodes", "panel-node-one", "panel-node-two", "panel-node-three",
-        ].map(function(elementId) {
-          document.getElementById(elementId).style.opacity = 1;
-        });
-
-        registered = true;
-        document.getElementById("img-reg").classList.remove("clickable");
-        document.getElementById("img-auth-a").classList.add("clickable");
-        document.getElementById("img-auth-b").classList.add("clickable");
-      }
-
-      function maskAndAuthenticate(value) {
-        document.getElementById("authenticate").disabled = true;
-        document.getElementById("active").value = value;
-        document.getElementById("img-auth-a").style.cursor = "auto";
-        document.getElementById("img-auth-b").style.cursor = "auto";
-        document.getElementById("img-auth-" + authImageChosen).style.border = "4px solid #999999";
-        authenticated = true;
-        connectorsAuthenticate();
-
-        [
-          "step-output", "panel-output"
-        ].map(function(elementId) {
-          document.getElementById(elementId).style.opacity = 1;
-        });
-      }
-
-      function showTokenAtNode(nodeName, regOrAuth) {
-        let share = Array.from(pyscript.interpreter.globals.get("broadcast"));
-        let canvas = document.getElementById("node-" + nodeName + "-" + regOrAuth + "-token");
-        let context = canvas.getContext("2d");
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        let w = canvas.width, h = canvas.height;
-        let pixelWidth = (h / 8) * 2.7 * (1.6 * canvas.width / 242), pixelHeight = 6;
-        let opacity = (regOrAuth == 'reg') ? 1 : 0.4;
-        for (let i = 0; i < share.length; i++) {
-          context.fillStyle = "rgba(255, 255, 255, " + (opacity * (share[i] / 256)) + ")";
-          context.fillRect(
-            Math.round(i / 16) * pixelWidth,
-            (i % 8) * pixelHeight,
-            pixelWidth,
-            pixelHeight
-          );
-        }
-      }
-
-      function showToken(regOrAuth) {
-        $(".node-" + regOrAuth + "-title").show();
-        showTokenAtNode("one", regOrAuth);
-        showTokenAtNode("two", regOrAuth);
-        showTokenAtNode("three", regOrAuth);
-      }
-
       async function initialize() {
+        setOpacities(0.2, [
+            "panel-authenticate",
+            "step-nodes", "node-0", "node-1", "node-2",
+            "step-recipient", "recipient"
+        ]);
+        setOpacities(0, [
+            "node-0-token-0-title", "node-0-token-1-title", "node-0-share-title",
+            "node-1-token-0-title", "node-1-token-1-title", "node-1-share-title",
+            "node-2-token-0-title", "node-2-token-1-title", "node-2-share-title",
+        ]);
+
         await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
         await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
         await faceapi.nets.faceRecognitionNet.loadFromUri('./models');
@@ -780,31 +786,160 @@
         await faceapi.nets.ageGenderNet.loadFromUri('./models');   
 
         // Process registration example image.
-        var img = document.getElementById("img-reg");
-        extractDescriptor(img, true).then((processedImg) => {
+        var imgReg = document.getElementById('img-reg');
+        faceApiExtractDescriptor(imgReg, true).then((processedImg) => {
           registrationDescriptorForPython = processedImg.descriptor;
         });
+        imgReg.addEventListener('click', function(event) {
+          if (!regImageChosen) {
+            imgReg.style.border = '4px solid #0000FF';
+            document.getElementById('register').disabled = false;
+            regImageChosen = true;
+          }
+        });
 
-        // Process first authentication example image.
-        var userA = document.getElementById("img-auth-a");
-        extractDescriptor(userA).then((processedImg) => {
+        // Process (and set click handler for) first authentication example image.
+        var imgAuthA = document.getElementById("img-auth-a");
+        faceApiExtractDescriptor(imgAuthA).then((processedImg) => {
           authenticationDescriptorOneForPython = processedImg.descriptor;
         });
+        imgAuthA.addEventListener('click', function(event) {
+          if (registered && !authenticated) {
+            authImageChosen = 'a';
+            document.getElementById('img-auth-a').style.border = '4px solid #0000FF';
+            document.getElementById('img-auth-b').style.border = '4px solid #FFFFFF';
+            document.getElementById('authenticate').disabled = false;
+          }
+        });
 
-        // Process second authentication example image.
-        var userB = document.getElementById("img-auth-b");
-        extractDescriptor(userB).then((processedImg) => {
+        // Process(and set click handler for) second authentication example image.
+        var imgAuthB = document.getElementById("img-auth-b");
+        faceApiExtractDescriptor(imgAuthB).then((processedImg) => {
           authenticationDescriptorTwoForPython = processedImg.descriptor;
         });
-      }
-      
-      function resize() {
-        connectorsRegister();
-        connectorsAuthenticate();
+        imgAuthB.addEventListener('click', function(event) {
+          if (registered && !authenticated) {
+            authImageChosen = 'b';
+            document.getElementById('img-auth-a').style.border = '4px solid #FFFFFF';
+            document.getElementById('img-auth-b').style.border = '4px solid #0000FF';
+            document.getElementById('authenticate').disabled = false;
+          }
+        });
+
+        // Handle image from image selector.
+        document.getElementById('image-uploader').addEventListener(
+          'change',
+          function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+              var imgReg = document.getElementById('img-reg');
+              imgReg.src = URL.createObjectURL(file);
+              imgReg.onload = () => URL.revokeObjectURL(imgReg.src);  // Free memory
+              imgReg.style.display = 'block';
+
+              // Process the chosen image with face-api.js and make the output available
+              // to the Python component.
+              faceApiExtractDescriptor(imgReg, true).then((detection) => {
+                registrationDescriptorForPython = detection.descriptor;
+              });
+
+              regImageChosen = true;
+              imgReg.style.border = '4px solid #0000FF';
+              document.getElementById('register').disabled = false;
+            };
+            reader.readAsDataURL(file);
+            regImageChosen = true;
+          }
+        );
+
+        diagramInput = new Diagram("diagram-input", 100);
+        diagramInput.vertical(0, 2, 0, 50, "it0", ["ih"]);
+        diagramInput.vertical(1, 2, 0, 50, "it1", ["ih"]);
+        diagramInput.horizontal(9, 50, "ih", ["ib0", "ib1", "ib2"]);
+        diagramInput.vertical(0, 9, 50, 50, "ib0");
+        diagramInput.vertical(4, 9, 50, 50, "ib1");
+        diagramInput.vertical(8, 9, 50, 50, "ib2");
+
+        diagramOutput = new Diagram("diagram-output", 100);
+        diagramOutput.vertical(0, 3, 0, 50, "ot0");
+        diagramOutput.vertical(1, 3, 0, 50, "ot1");
+        diagramOutput.vertical(2, 3, 0, 50, "ot2");
+        diagramOutput.horizontal(3, 50, "oh");
+        diagramOutput.vertical(0, 1, 50, 50, "ob0");
       }
 
+      function clientGetRegistrationDescriptor() {
+        return registrationDescriptorForPython;
+      }
+
+      function clientGetAuthenticationDescriptor() {
+        return (
+          (authImageChosen == "a") 
+          ? authenticationDescriptorOneForPython
+          : authenticationDescriptorTwoForPython
+        );
+      }
+
+      function clientMaskAndRegister() {
+        document.getElementById("register").disabled = true;
+        document.getElementById("image-uploader").disabled = true;
+        document.getElementById("image-uploader-label").style.backgroundColor = "#CCCCCC";
+        document.getElementById("image-uploader-label").style.color = "#777777";
+        document.getElementById("image-uploader-label").style.cursor = "default";
+        document.getElementById("img-reg").style.cursor = "auto";
+        document.getElementById("img-reg").style.border = "4px solid #999999";
+        diagramInput.show("it0");
+        setOpacities(1, ["panel-authenticate"]);
+
+        registered = true;
+        document.getElementById("img-reg").classList.remove("clickable");
+        document.getElementById("img-auth-a").classList.add("clickable");
+        document.getElementById("img-auth-b").classList.add("clickable");
+      }
+
+      function clientMaskAndAuthenticate(value) {
+        document.getElementById("authenticate").disabled = true;
+        document.getElementById("active").value = value;
+        document.getElementById("img-auth-a").style.cursor = "auto";
+        document.getElementById("img-auth-b").style.cursor = "auto";
+        document.getElementById("img-auth-" + authImageChosen).style.border = "4px solid #999999";
+        authenticated = true;
+        diagramInput.show("it1");
+      }
+
+      function clientShowDescriptor(clientId, data) {
+        showBytes("client-" + clientId + "-descriptor", Array.from(data));
+      }
+
+      function nodesEnable() {
+        setOpacities(1, ["step-nodes", "node-0", "node-1", "node-2"]);
+      }
+
+      function nodeShowTokenMasked(clientId, nodeId, data) {
+        setOpacities(1, ["node-" + nodeId + "-token-" + clientId + "-title"]);
+        showBytes("node-" + nodeId + "-token-" + clientId + "-masked", Array.from(data));
+      }
+
+      function nodeShowShare(nodeId, data) {
+        setOpacities(1, ["node-" + nodeId + "-share-title"]);
+      }
+
+      function recipientEnable() {
+        ["ot0", "ot1", "ot2", "oh", "ob0"].map( function(id) { diagramOutput.show(id); } );
+        setOpacities(1, ["step-recipient", "recipient"]);
+      }
+
+      let registrationDescriptorForPython;
+      let authenticationDescriptorOneForPython;
+      let authenticationDescriptorTwoForPython;
+      let regImageChosen = false;
+      let registered = false;
+      let authImageChosen = null;
+      let authenticated = false;
+      let diagramInput = null, diagramOutput = null;
       window.onload = initialize;
-      window.onresize = resize;
     </script>
   </body>
 </html>
