@@ -14,12 +14,12 @@ Minimal pure-Python library that implements a basic version of a `secure decentr
    :target: https://tinybio.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
 
-.. |actions| image:: https://github.com/nillion-oss/tinybio/workflows/lint-test-cover-docs/badge.svg
-   :target: https://github.com/nillion-oss/tinybio/actions/workflows/lint-test-cover-docs.yml
+.. |actions| image:: https://github.com/NillionNetwork/tinybio/workflows/lint-test-cover-docs/badge.svg
+   :target: https://github.com/NillionNetwork/tinybio/actions/workflows/lint-test-cover-docs.yml
    :alt: GitHub Actions status.
 
-.. |coveralls| image:: https://coveralls.io/repos/github/nillion-oss/tinybio/badge.svg?branch=main
-   :target: https://coveralls.io/github/nillion-oss/tinybio?branch=main
+.. |coveralls| image:: https://coveralls.io/repos/github/NillionNetwork/tinybio/badge.svg?branch=main
+   :target: https://coveralls.io/github/NillionNetwork/tinybio?branch=main
    :alt: Coveralls test coverage summary.
 
 Installation and Usage
@@ -133,7 +133,7 @@ Style conventions are enforced using `Pylint <https://pylint.readthedocs.io>`__:
 
 Contributions
 ^^^^^^^^^^^^^
-In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/nillion-oss/tinybio>`__ for this library.
+In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/NillionNetwork/tinybio>`__ for this library.
 
 Versioning
 ^^^^^^^^^^
